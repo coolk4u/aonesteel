@@ -29,115 +29,129 @@ const Stocks = () => {
   const stockItems = [
     {
       id: 1,
-      productCode: 'BC001',
-      productName: 'Birlanu Portland Cement Grade 53',
-      category: 'Cement',
+      productCode: 'TMT001',
+      productName: 'A-One Steel TMT Bars Fe500D 8mm',
+      category: 'TMT Bars',
       currentStock: 2450,
       minStock: 500,
       maxStock: 5000,
-      unitPrice: 420,
-      totalValue: 1029000,
+      unitPrice: 68000,
+      totalValue: 166600000,
       lastUpdated: '2025-01-08 10:30 AM',
       status: 'Good',
-      unit: 'bags'
+      unit: 'tons'
     },
     {
       id: 2,
-      productCode: 'BS001',
-      productName: 'Birlanu TMT Steel Bars Fe500D',
-      category: 'Steel',
+      productCode: 'TMT002',
+      productName: 'A-One Steel TMT Bars Fe500D 12mm',
+      category: 'TMT Bars',
       currentStock: 850,
       minStock: 1000,
       maxStock: 3000,
-      unitPrice: 65000,
-      totalValue: 55250000,
+      unitPrice: 67500,
+      totalValue: 57375000,
       lastUpdated: '2025-01-08 09:15 AM',
       status: 'Low',
       unit: 'tons'
     },
     {
       id: 3,
-      productCode: 'BT001',
-      productName: 'Birlanu Ceramic Floor Tiles 600x600mm',
-      category: 'Tiles',
+      productCode: 'TMT003',
+      productName: 'A-One Steel TMT Bars Fe500D 16mm',
+      category: 'TMT Bars',
       currentStock: 0,
       minStock: 500,
       maxStock: 2000,
-      unitPrice: 45,
+      unitPrice: 67000,
       totalValue: 0,
       lastUpdated: '2025-01-07 04:20 PM',
       status: 'Out of Stock',
-      unit: 'pieces'
+      unit: 'tons'
     },
     {
       id: 4,
-      productCode: 'BB001',
-      productName: 'Birlanu Red Clay Bricks Class A',
-      category: 'Bricks',
-      currentStock: 15000,
-      minStock: 5000,
-      maxStock: 25000,
-      unitPrice: 8,
-      totalValue: 120000,
+      productCode: 'MS001',
+      productName: 'A-One Steel MS Billets',
+      category: 'MS Billets',
+      currentStock: 1500,
+      minStock: 500,
+      maxStock: 2500,
+      unitPrice: 58000,
+      totalValue: 87000000,
       lastUpdated: '2025-01-08 11:45 AM',
       status: 'Good',
-      unit: 'pieces'
+      unit: 'tons'
     },
     {
       id: 5,
-      productCode: 'BP001',
-      productName: 'Birlanu Ready Mix Concrete M25 Grade',
-      category: 'Concrete',
+      productCode: 'PT001',
+      productName: 'A-One Steel Pipes & Tubes (MS)',
+      category: 'Pipes & Tubes',
       currentStock: 150,
       minStock: 50,
       maxStock: 300,
-      unitPrice: 4500,
-      totalValue: 675000,
+      unitPrice: 85000,
+      totalValue: 12750000,
       lastUpdated: '2025-01-08 02:20 PM',
       status: 'Good',
-      unit: 'cubic meters'
+      unit: 'tons'
     },
     {
       id: 6,
-      productCode: 'BA001',
-      productName: 'Birlanu M-Sand (Manufactured Sand)',
-      category: 'Aggregates',
+      productCode: 'PT002',
+      productName: 'A-One Steel Pipes & Tubes Galvanized',
+      category: 'Pipes & Tubes',
       currentStock: 45,
       minStock: 50,
       maxStock: 200,
-      unitPrice: 1200,
-      totalValue: 54000,
+      unitPrice: 95000,
+      totalValue: 4275000,
       lastUpdated: '2025-01-08 01:15 PM',
       status: 'Low',
       unit: 'tons'
     },
     {
       id: 7,
-      productCode: 'BW001',
-      productName: 'Birlanu Exterior Wall Paint Weather Shield',
-      category: 'Paints',
+      productCode: 'HR001',
+      productName: 'A-One Steel Hot Rolled (HR) Sheets',
+      category: 'Hot Rolled',
       currentStock: 280,
       minStock: 100,
       maxStock: 500,
-      unitPrice: 180,
-      totalValue: 50400,
+      unitPrice: 72000,
+      totalValue: 20160000,
       lastUpdated: '2025-01-07 03:45 PM',
       status: 'Good',
-      unit: 'liters'
+      unit: 'tons'
     },
     {
       id: 8,
-      productCode: 'BF001',
-      productName: 'Birlanu AAC Blocks 600x200x100mm',
-      category: 'Blocks',
+      productCode: 'CR001',
+      productName: 'A-One Steel Cold Rolled (CR) Sheets',
+      category: 'Cold Rolled',
       currentStock: 85,
       minStock: 20,
       maxStock: 150,
-      unitPrice: 3800,
-      totalValue: 323000,
+      unitPrice: 78000,
+      totalValue: 6630000,
       lastUpdated: '2025-01-08 12:30 PM',
       status: 'Good',
-      unit: 'cubic meters'
+      unit: 'tons'
+    },
+    {
+      id: 9,
+      productCode: 'FS001',
+      productName: 'A-One Steel Ferro Silicon',
+      category: 'Ferro Silicon',
+      currentStock: 120,
+      minStock: 50,
+      maxStock: 200,
+      unitPrice: 145000,
+      totalValue: 17400000,
+      lastUpdated: '2025-01-08 08:45 AM',
+      status: 'Good',
+      unit: 'tons'
     }
   ];
 
@@ -170,8 +184,8 @@ const Stocks = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Construction Materials Stock</h1>
-            <p className="text-gray-600">Monitor and manage your Birlanu construction materials inventory</p>
+            <h1 className="text-2xl font-bold text-gray-900">A-One Steel Materials Stock</h1>
+            <p className="text-gray-600">Monitor and manage your A-One Steel construction materials inventory</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline">
@@ -245,11 +259,11 @@ const Stocks = () => {
         <Card>
           <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <CardTitle>Construction Materials Inventory</CardTitle>
+              <CardTitle>A-One Steel Materials Inventory</CardTitle>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search construction materials..."
+                  placeholder="Search A-One Steel materials..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 w-64"

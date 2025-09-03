@@ -81,7 +81,7 @@ const ProductCatalog = () => {
         image: record.Product_Image_URL__c || 'https://via.placeholder.com/150',
         rating: Math.random() * 2 + 3, // Random rating between 3 and 5
         inStock: record.IsActive,
-        description: `High quality ${record.Family} - ${record.ProductCode}`,
+        description: `High quality A-One Steel ${record.Family} - ${record.ProductCode}`,
         schemes: ['Bulk Discount Available', 'Limited Time Offer'],
         minOrderQty: 10,
         unit: 'units',
@@ -142,8 +142,8 @@ const ProductCatalog = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Construction Materials Catalog</h1>
-            <p className="text-gray-600">Browse and order from our extensive construction materials range</p>
+            <h1 className="text-2xl font-bold text-gray-900">A-One Steel Materials Catalog</h1>
+            <p className="text-gray-600">Browse and order from our extensive A-One Steel TMT and construction materials range</p>
           </div>
           <div className="flex items-center space-x-4">
             <Badge variant="secondary" className="bg-green-100 text-green-800">
@@ -162,7 +162,7 @@ const ProductCatalog = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search construction materials..."
+                placeholder="Search A-One Steel materials..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -191,8 +191,8 @@ const ProductCatalog = () => {
                 <Gift className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-bold">Construction Season Special Offers!</h3>
-                <p className="text-sm text-orange-100">Contractor schemes • Bulk discounts • Free transport • Quality guarantee</p>
+                <h3 className="font-bold">A-One Steel Special Offers!</h3>
+                <p className="text-sm text-orange-100">TMT Bar schemes • Bulk discounts • Free transport • Quality guarantee</p>
               </div>
             </div>
             <Zap className="h-8 w-8 text-yellow-300" />
