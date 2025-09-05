@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import logo from './assets/LOGO.png';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -67,11 +68,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: Package, label: "Product Catalog", path: "/catalog" },
+    { icon: ShoppingCart, label: "My Cart", path: "/cart" },
+    { icon: FileText, label: "Orders", path: "/orders" },
     { icon: Users, label: "My Retailers", path: "/retailers" },
     { icon: Warehouse, label: 'Stock Management', path: '/stocks' },
     { icon: ClipboardCheck, label: 'GRN Management', path: '/grn' },
-    { icon: ShoppingCart, label: "My Cart", path: "/cart" },
-    { icon: FileText, label: "Orders", path: "/orders" },
     { icon: UserCircle, label: "My Profile", path: "/profile" },
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
@@ -117,7 +118,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <div className="flex items-center space-x-3">
             <div className="bg-white/10 backdrop-blur-sm p-2 rounded-xl flex-shrink-0">
               <img
-                src="https://aonesteelgroup.com/wp-content/uploads/2024/07/A-One-Steel-Group-1.png"
+                src={logo}
                 alt="A-One Steel Group Logo"
                 className="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 object-contain rounded-md"
               />

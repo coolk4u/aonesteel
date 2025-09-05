@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Building2, Lock, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import logo from './assets/LOGO.png';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -37,16 +37,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-red-800 via-red-600 to-red-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur">
           <CardHeader className="text-center pb-8">
             <div className="flex justify-center mb-4">
-              <div className="bg-blue-600 p-3 rounded-full">
-                <Building2 className="h-8 w-8 text-white" />
+              <div>
+                <img src= {logo} alt="" className='h-16'/>
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-800">Birlanu</CardTitle>
+            <CardTitle className="text-2xl font-bold text-gray-800">A-One Steel & Alloys</CardTitle>
             <p className="text-gray-600 mt-2">Distributor Management System</p>
           </CardHeader>
           
@@ -86,7 +86,7 @@ const Login = () => {
                 </div>
               </div>
               
-              <Button type="submit" className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+              <Button type="submit" className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold">
                 Login to Portal
               </Button>
             </form>
