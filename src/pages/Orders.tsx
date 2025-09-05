@@ -31,11 +31,11 @@ const Orders = () => {
     const fetchOrders = async () => {
       try {
         const authResponse = await axios.post(
-          'https://pde3-dev-ed.develop.my.salesforce.com/services/oauth2/token',
+          'https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token',
           new URLSearchParams({
             grant_type: 'client_credentials',
-            client_id: '3MVG97z4K_iuCemhaHjeuAp6A5jpAuMB31Trve1nd0TZAeH7onoyc.LAATp2pnK2Ag3kaMYorR4Np7E7XgMa9',
-            client_secret: '49C874D60D67C1A6BF3B31213B2F924747A0D27CBEFD2ACEDE0751E20FFFEAA7',
+            client_id: '3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl',
+            client_secret: 'D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891',
           }),
           { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         );
@@ -54,7 +54,7 @@ const Orders = () => {
           LIMIT 200
         `.replace(/\s+/g, '+');
 
-        const queryUrl = `https://pde3-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
+        const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
         const response = await axios.get(queryUrl, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
