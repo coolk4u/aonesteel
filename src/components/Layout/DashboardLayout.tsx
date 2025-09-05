@@ -79,7 +79,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isActivePath = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex relative">
+    <div className="min-h-screen bg-background flex relative">
       {/* Mobile Overlay */}
       {isMobile && sidebarOpen && (
         <div
@@ -90,7 +90,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Sidebar */}
       <div
-        className={`bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900 transition-all duration-300 flex flex-col shadow-lg ${
+        className={`bg-gradient-to-b from-sidebar-background via-sidebar-accent to-sidebar-background transition-all duration-300 flex flex-col shadow-lg border-r border-sidebar-border ${
           isMobile
             ? `fixed left-0 top-0 h-full z-50 ${
                 sidebarOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full"
@@ -105,7 +105,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(false)}
-              className="text-white hover:bg-white/10"
+              className="text-sidebar-foreground hover:bg-sidebar-primary/10"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -113,19 +113,19 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         )}
 
         {/* Logo Section */}
-        <div className="p-4 lg:p-6 border-b border-blue-700/30">
+        <div className="p-4 lg:p-6 border-b border-sidebar-border/30">
           <div className="flex items-center space-x-3">
-            <div className="bg-white/10 backdrop-blur-sm p-2 rounded-lg flex-shrink-0">
+            <div className="bg-white/10 backdrop-blur-sm p-2 rounded-xl flex-shrink-0">
               <img
-                src="https://ik.imagekit.io/DebajyotiG/Birlanu/about-logo.jpg?updatedAt=1753685813148"
-                alt="Birlanu Logo"
-                className="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 object-contain rounded-md border border-white/20"
+                src="https://aonesteelgroup.com/wp-content/uploads/2024/07/A-One-Steel-Group-1.png"
+                alt="A-One Steel Group Logo"
+                className="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 object-contain rounded-md"
               />
             </div>
             {(sidebarOpen || isMobile) && (
               <div>
-                {/* <h1 className="font-bold text-lg lg:text-xl text-white">Birlanu</h1> */}
-                <p className="text-xs lg:text-sm text-blue-200">
+                <h1 className="font-bold text-lg lg:text-xl text-sidebar-foreground">A-One Steel</h1>
+                <p className="text-xs lg:text-sm text-sidebar-foreground/70">
                   Distributor Portal
                 </p>
               </div>
@@ -140,25 +140,25 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <li key={item.path}>
                 <button
                   onClick={() => navigate(item.path)}
-                  className={`w-full flex items-center justify-between p-2.5 lg:p-3 rounded-lg transition-all duration-200 group ${
+                  className={`w-full flex items-center justify-between p-2.5 lg:p-3 rounded-xl transition-all duration-200 group ${
                     isActivePath(item.path)
-                      ? "bg-white/20 backdrop-blur-sm text-white border-r-2 border-white shadow-lg"
-                      : "hover:bg-white/10 text-blue-100 hover:text-white"
+                      ? "bg-sidebar-primary/20 backdrop-blur-sm text-sidebar-foreground border-r-2 border-sidebar-primary shadow-lg"
+                      : "hover:bg-sidebar-primary/10 text-sidebar-foreground/70 hover:text-sidebar-foreground"
                   }`}
                   title={!sidebarOpen && !isMobile ? item.label : ""}
                 >
                   <div className="flex items-center space-x-3">
                     <item.icon
                       className={`h-4 w-4 lg:h-5 lg:w-5 flex-shrink-0 ${
-                        isActivePath(item.path) ? "text-white" : "text-blue-200"
+                        isActivePath(item.path) ? "text-sidebar-foreground" : "text-sidebar-foreground/60"
                       }`}
                     />
                     {(sidebarOpen || isMobile) && (
                       <span
                         className={`font-medium text-sm lg:text-base ${
                           isActivePath(item.path)
-                            ? "text-white"
-                            : "text-blue-100"
+                            ? "text-sidebar-foreground"
+                            : "text-sidebar-foreground/70"
                         }`}
                       >
                         {item.label}
@@ -166,7 +166,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     )}
                   </div>
                   {(sidebarOpen || isMobile) && isActivePath(item.path) && (
-                    <ChevronRight className="h-3 w-3 lg:h-4 lg:w-4 text-white" />
+                    <ChevronRight className="h-3 w-3 lg:h-4 lg:w-4 text-sidebar-foreground" />
                   )}
                 </button>
               </li>
@@ -175,17 +175,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </nav>
 
         {/* User Section */}
-        <div className="p-3 lg:p-4 border-t border-blue-700/30">
+        <div className="p-3 lg:p-4 border-t border-sidebar-border/30">
           <div className="flex items-center space-x-3 mb-3 lg:mb-4">
-            <div className="bg-white/10 backdrop-blur-sm p-1.5 lg:p-2 rounded-full flex-shrink-0">
-              <User className="h-4 w-4 lg:h-5 lg:w-5 text-white" />
+            <div className="bg-sidebar-primary/20 backdrop-blur-sm p-1.5 lg:p-2 rounded-full flex-shrink-0">
+              <User className="h-4 w-4 lg:h-5 lg:w-5 text-sidebar-foreground" />
             </div>
             {(sidebarOpen || isMobile) && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs lg:text-sm font-medium text-white truncate">
+                <p className="text-xs lg:text-sm font-medium text-sidebar-foreground truncate">
                   {distributorName}
                 </p>
-                <p className="text-xs text-blue-200">Active Distributor</p>
+                <p className="text-xs text-sidebar-foreground/70">Active Distributor</p>
               </div>
             )}
           </div>
@@ -194,7 +194,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             onClick={handleLogout}
             variant="ghost"
             size="sm"
-            className={`w-full text-blue-100 hover:text-white hover:bg-white/10 border border-blue-600/50 text-xs lg:text-sm ${
+            className={`w-full text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-primary/10 border border-sidebar-border text-xs lg:text-sm ${
               sidebarOpen || isMobile ? "justify-start" : "justify-center"
             }`}
             title={!sidebarOpen && !isMobile ? "Logout" : ""}
@@ -208,24 +208,24 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 p-3 lg:p-4">
+        <header className="bg-card/80 backdrop-blur-sm shadow-soft border-b border-border p-3 lg:p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 lg:space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-1.5 lg:p-2 hover:bg-gray-100"
+                className="p-1.5 lg:p-2 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
               >
                 <Menu className="h-4 w-4 lg:h-5 lg:w-5" />
               </Button>
 
               <div className="min-w-0 flex-1">
-                <h2 className="text-lg lg:text-xl font-semibold text-gray-900 truncate">
+                <h2 className="text-lg lg:text-xl font-semibold text-foreground truncate">
                   {menuItems.find((item) => isActivePath(item.path))?.label ||
                     "Dashboard"}
                 </h2>
-                <p className="text-xs lg:text-sm text-gray-500 truncate">
+                <p className="text-xs lg:text-sm text-muted-foreground truncate">
                   Welcome back, {distributorName}
                 </p>
               </div>
@@ -235,10 +235,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="relative hover:bg-gray-100 p-1.5 lg:p-2"
+                className="relative hover:bg-muted/50 p-1.5 lg:p-2 text-muted-foreground hover:text-foreground"
               >
-                <Bell className="h-4 w-4 lg:h-5 lg:w-5 text-gray-600" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 lg:h-5 lg:w-5 flex items-center justify-center">
+                <Bell className="h-4 w-4 lg:h-5 lg:w-5" />
+                <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-4 w-4 lg:h-5 lg:w-5 flex items-center justify-center">
                   3
                 </span>
               </Button>

@@ -63,10 +63,21 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			backgroundImage: {
+				'gradient-purple': 'linear-gradient(135deg, hsl(var(--gradient-purple-start)), hsl(var(--gradient-purple-end)))',
+				'gradient-blue': 'linear-gradient(135deg, hsl(var(--gradient-blue-start)), hsl(var(--gradient-blue-end)))',
+				'gradient-green': 'linear-gradient(135deg, hsl(var(--gradient-green-start)), hsl(var(--gradient-green-end)))',
+				'gradient-orange': 'linear-gradient(135deg, hsl(var(--gradient-orange-start)), hsl(var(--gradient-orange-end)))',
+				'gradient-teal': 'linear-gradient(135deg, hsl(var(--gradient-teal-start)), hsl(var(--gradient-teal-end)))',
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			boxShadow: {
+				'soft': '0 4px 20px -4px hsl(var(--primary) / 0.25)',
+				'glow': '0 0 30px -10px hsl(var(--primary) / 0.4)',
 			},
 			keyframes: {
 				'accordion-down': {
