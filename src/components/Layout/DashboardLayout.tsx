@@ -105,7 +105,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               variant="ghost"
               size="sm"
               onClick={() => setSidebarOpen(false)}
-              className="text-white hover:bg-white/10"
+              className="text-gray-800 hover:bg-white/10"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -124,8 +124,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
             {(sidebarOpen || isMobile) && (
               <div>
-                <h1 className="font-bold text-lg lg:text-xl text-white">A-One Steel</h1>
-                <p className="text-xs lg:text-sm text-white/80">
+                <h1 className="font-bold text-lg lg:text-xl text-gray-800">A-One Steel</h1>
+                <p className="text-xs lg:text-sm text-gray-700">
                   Distributor Portal
                 </p>
               </div>
@@ -142,23 +142,23 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   onClick={() => navigate(item.path)}
                   className={`w-full flex items-center justify-between p-2.5 lg:p-3 rounded-xl transition-all duration-200 group ${
                     isActivePath(item.path)
-                      ? "bg-white/20 backdrop-blur-sm text-white border-r-2 border-white shadow-lg"
-                      : "hover:bg-white/10 text-white/80 hover:text-white"
+                      ? "bg-white/20 backdrop-blur-sm text-gray-800 border-r-2 border-gray-800 shadow-lg"
+                      : "hover:bg-white/10 text-gray-700 hover:text-gray-800"
                   }`}
                   title={!sidebarOpen && !isMobile ? item.label : ""}
                 >
                   <div className="flex items-center space-x-3">
                     <item.icon
                       className={`h-4 w-4 lg:h-5 lg:w-5 flex-shrink-0 ${
-                        isActivePath(item.path) ? "text-white" : "text-white/70"
+                        isActivePath(item.path) ? "text-gray-800" : "text-gray-600"
                       }`}
                     />
                     {(sidebarOpen || isMobile) && (
                       <span
                         className={`font-medium text-sm lg:text-base ${
                           isActivePath(item.path)
-                            ? "text-white"
-                            : "text-white/80"
+                            ? "text-gray-800"
+                            : "text-gray-700"
                         }`}
                       >
                         {item.label}
@@ -166,7 +166,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     )}
                   </div>
                   {(sidebarOpen || isMobile) && isActivePath(item.path) && (
-                    <ChevronRight className="h-3 w-3 lg:h-4 lg:w-4 text-white" />
+                    <ChevronRight className="h-3 w-3 lg:h-4 lg:w-4 text-gray-800" />
                   )}
                 </button>
               </li>
@@ -178,14 +178,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <div className="p-3 lg:p-4 border-t border-sidebar-border/30">
           <div className="flex items-center space-x-3 mb-3 lg:mb-4">
             <div className="bg-white/20 backdrop-blur-sm p-1.5 lg:p-2 rounded-full flex-shrink-0">
-              <User className="h-4 w-4 lg:h-5 lg:w-5 text-white" />
+              <User className="h-4 w-4 lg:h-5 lg:w-5 text-gray-800" />
             </div>
             {(sidebarOpen || isMobile) && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs lg:text-sm font-medium text-white truncate">
+                <p className="text-xs lg:text-sm font-medium text-gray-800 truncate">
                   {distributorName}
                 </p>
-                <p className="text-xs text-white/70">Active Distributor</p>
+                <p className="text-xs text-gray-600">Active Distributor</p>
               </div>
             )}
           </div>
@@ -194,7 +194,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             onClick={handleLogout}
             variant="ghost"
             size="sm"
-            className={`w-full text-white/90 hover:text-white hover:bg-white/10 border border-white/30 text-xs lg:text-sm ${
+            className={`w-full text-gray-700 hover:text-gray-800 hover:bg-white/10 border border-gray-400 text-xs lg:text-sm ${
               sidebarOpen || isMobile ? "justify-start" : "justify-center"
             }`}
             title={!sidebarOpen && !isMobile ? "Logout" : ""}
