@@ -39,9 +39,9 @@ const ProductCatalog = () => {
   const [cart, setCart] = useState<any[]>([]);
 
   const fetchProducts = async () => {
-    const tokenUrl = 'https://pde3-dev-ed.develop.my.salesforce.com/services/oauth2/token';
-    const clientId = '3MVG97z4K_iuCemhaHjeuAp6A5jpAuMB31Trve1nd0TZAeH7onoyc.LAATp2pnK2Ag3kaMYorR4Np7E7XgMa9';
-    const clientSecret = '49C874D60D67C1A6BF3B31213B2F924747A0D27CBEFD2ACEDE0751E20FFFEAA7';
+    const tokenUrl = 'https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token';
+    const clientId = '3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl';
+    const clientSecret = 'D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891';
 
     const params = new URLSearchParams();
     params.append('grant_type', 'client_credentials');
@@ -55,15 +55,15 @@ const ProductCatalog = () => {
       const accessToken = tokenResponse.data.access_token;
 
       const query = `
-        SELECT Id, Name, ProductCode, Family, IsActive, Product_Image_URL__c,
+                SELECT Id, Name, ProductCode, Family, IsActive, Prod_Img_Url__c, Description,
         (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true LIMIT 1)
         FROM Product2
-        WHERE Family = 'Pipes'
+        WHERE Family = 'Steel'
         ORDER BY CreatedDate DESC
         LIMIT 200
       `.replace(/\s+/g, '+');
 
-      const queryUrl = `https://pde3-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
+      const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
 
       const response = await axios.get(queryUrl, {
         headers: {
@@ -78,10 +78,10 @@ const ProductCatalog = () => {
         category: record.Family || 'General',
         price: record.PricebookEntries?.records?.[0]?.UnitPrice || 0,
         mrp: (record.PricebookEntries?.[0]?.UnitPrice || 0) * 1.1, // assume 10% markup
-        image: record.Product_Image_URL__c || 'https://via.placeholder.com/150',
+        image: record.Prod_Img_Url__c || 'https://via.placeholder.com/150', // Fixed field name
         rating: Math.random() * 2 + 3, // Random rating between 3 and 5
         inStock: record.IsActive,
-        description: `High quality A-One Steel ${record.Family} - ${record.ProductCode}`,
+        description: record.Description,
         schemes: ['Bulk Discount Available', 'Limited Time Offer'],
         minOrderQty: 10,
         unit: 'units',
@@ -135,6 +135,11 @@ const ProductCatalog = () => {
 
   const getDiscountPercentage = (price: number, mrp: number) => {
     return Math.round(((mrp - price) / mrp) * 100);
+  };
+
+  // Handle image loading errors
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'https://via.placeholder.com/150';
   };
 
   return (
@@ -207,6 +212,7 @@ const ProductCatalog = () => {
                   src={product.image}
                   alt={product.name}
                   className="w-full h-48 object-cover rounded-t-lg"
+                  onError={handleImageError} // Added error handler
                 />
                 {!product.inStock && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-t-lg">
