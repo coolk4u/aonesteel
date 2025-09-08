@@ -70,7 +70,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { icon: Package, label: "Product Catalog", path: "/catalog" },
     { icon: ShoppingCart, label: "My Cart", path: "/cart" },
     { icon: FileText, label: "Orders", path: "/orders" },
-    { icon: Users, label: "My Retailers", path: "/retailers" },
+    { icon: Users, label: "Project Site", path: "/retailers" },
     { icon: Warehouse, label: 'Stock Management', path: '/stocks' },
     { icon: ClipboardCheck, label: 'GRN Management', path: '/grn' },
     { icon: UserCircle, label: "My Profile", path: "/profile" },

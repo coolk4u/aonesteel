@@ -51,7 +51,7 @@ const FetchData = () => {
 
     const fetchData = async () => {
       try {
-        const query = `SELECT Id,Name FROM Account`;
+        const query = `SELECT Id, Name, Location__Street__s, Location__City__s, Location__CountryCode__s, Location__PostalCode__s, Start_Date__c, Is_Existing_Customer__c, Status__c, Builder_Account__r.Name, (Select Id, Field_Officer__c, Check_In__c, Check_Out__c from Field_Visits__r) FROM Project_Site__c Where Builder_Account__r.Name = 'GR Trading Company'`;
         const encodedQuery = encodeURIComponent(query);
         const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${encodedQuery}`;
 
