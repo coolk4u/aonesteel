@@ -15,11 +15,11 @@ const FetchData = () => {
   // Step 1: Get Access Token
   const getAccessToken = async () => {
     const salesforceUrl =
-      "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token";
+      "https://gtm3.my.salesforce.com/services/oauth2/token";
     const clientId =
-      "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl";
+      "3MVG99AeQQhMVo3Q02nv1bpvla_Oe75wo1PGrCKO5InOsguy5GAvrHaL3N1coTyJFfCd0Ho6w51Ckyv9.rAVP";
     const clientSecret =
-      "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891";
+      "5759B3830FBA3FBEA97ECCB0E614F846A4650FC156E47084F213A47BF6EDF92F";
 
     const params = new URLSearchParams();
     params.append("grant_type", "client_credentials");
@@ -51,9 +51,9 @@ const FetchData = () => {
 
     const fetchData = async () => {
       try {
-        const query = `SELECT Id, Name, Location__Street__s, Location__City__s, Location__CountryCode__s, Location__PostalCode__s, Start_Date__c, Is_Existing_Customer__c, Status__c, Builder_Account__r.Name, (Select Id, Field_Officer__c, Check_In__c, Check_Out__c from Field_Visits__r) FROM Project_Site__c Where Builder_Account__r.Name = 'GR Trading Company'`;
+        const query = `SELECT Id,Name FROM Account`;
         const encodedQuery = encodeURIComponent(query);
-        const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${encodedQuery}`;
+        const queryUrl = `https://gtm3.my.salesforce.com/services/data/v62.0/query?q=${encodedQuery}`;
 
         const response = await axios.get(queryUrl, {
           headers: {
