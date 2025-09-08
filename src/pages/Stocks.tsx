@@ -1,18 +1,18 @@
-
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import axios from "axios";
 import DashboardLayout from '@/components/Layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { 
   Table, 
   TableBody, 
   TableCell, 
-  TableHead, 
+ TableHead, 
   TableHeader, 
   TableRow 
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import { 
   Search, 
   Package, 
@@ -21,162 +21,145 @@ import {
   TrendingDown,
   Download,
   Upload
-} from 'lucide-react';
+} from "lucide-react";
 
-const Stocks = () => {
+interface InventoryRecord {
+  Id: string;
+  Name: string;
+  Product__r: {
+    Name: string;
+  };
+  Category__c: string;
+  Current_Stock__c: number;
+  Status__c: string;
+  Minimum_Stock__c: number;
+  Unit_Price__c: number;
+  Inventory_Value__c: number;
+}
+
+const Inventory = () => {
+  const [inventoryItems, setInventoryItems] = useState<InventoryRecord[]>([]);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const stockItems = [
-    {
-      id: 1,
-      productCode: 'TMT001',
-      productName: 'A-One Steel TMT Bars Fe500D 8mm',
-      category: 'TMT Bars',
-      currentStock: 2450,
-      minStock: 500,
-      maxStock: 5000,
-      unitPrice: 68000,
-      totalValue: 166600000,
-      lastUpdated: '2025-01-08 10:30 AM',
-      status: 'Good',
-      unit: 'tons'
-    },
-    {
-      id: 2,
-      productCode: 'TMT002',
-      productName: 'A-One Steel TMT Bars Fe500D 12mm',
-      category: 'TMT Bars',
-      currentStock: 850,
-      minStock: 1000,
-      maxStock: 3000,
-      unitPrice: 67500,
-      totalValue: 57375000,
-      lastUpdated: '2025-01-08 09:15 AM',
-      status: 'Low',
-      unit: 'tons'
-    },
-    {
-      id: 3,
-      productCode: 'TMT003',
-      productName: 'A-One Steel TMT Bars Fe500D 16mm',
-      category: 'TMT Bars',
-      currentStock: 0,
-      minStock: 500,
-      maxStock: 2000,
-      unitPrice: 67000,
-      totalValue: 0,
-      lastUpdated: '2025-01-07 04:20 PM',
-      status: 'Out of Stock',
-      unit: 'tons'
-    },
-    {
-      id: 4,
-      productCode: 'MS001',
-      productName: 'A-One Steel MS Billets',
-      category: 'MS Billets',
-      currentStock: 1500,
-      minStock: 500,
-      maxStock: 2500,
-      unitPrice: 58000,
-      totalValue: 87000000,
-      lastUpdated: '2025-01-08 11:45 AM',
-      status: 'Good',
-      unit: 'tons'
-    },
-    {
-      id: 5,
-      productCode: 'PT001',
-      productName: 'A-One Steel Pipes & Tubes (MS)',
-      category: 'Pipes & Tubes',
-      currentStock: 150,
-      minStock: 50,
-      maxStock: 300,
-      unitPrice: 85000,
-      totalValue: 12750000,
-      lastUpdated: '2025-01-08 02:20 PM',
-      status: 'Good',
-      unit: 'tons'
-    },
-    {
-      id: 6,
-      productCode: 'PT002',
-      productName: 'A-One Steel Pipes & Tubes Galvanized',
-      category: 'Pipes & Tubes',
-      currentStock: 45,
-      minStock: 50,
-      maxStock: 200,
-      unitPrice: 95000,
-      totalValue: 4275000,
-      lastUpdated: '2025-01-08 01:15 PM',
-      status: 'Low',
-      unit: 'tons'
-    },
-    {
-      id: 7,
-      productCode: 'HR001',
-      productName: 'A-One Steel Hot Rolled (HR) Sheets',
-      category: 'Hot Rolled',
-      currentStock: 280,
-      minStock: 100,
-      maxStock: 500,
-      unitPrice: 72000,
-      totalValue: 20160000,
-      lastUpdated: '2025-01-07 03:45 PM',
-      status: 'Good',
-      unit: 'tons'
-    },
-    {
-      id: 8,
-      productCode: 'CR001',
-      productName: 'A-One Steel Cold Rolled (CR) Sheets',
-      category: 'Cold Rolled',
-      currentStock: 85,
-      minStock: 20,
-      maxStock: 150,
-      unitPrice: 78000,
-      totalValue: 6630000,
-      lastUpdated: '2025-01-08 12:30 PM',
-      status: 'Good',
-      unit: 'tons'
-    },
-    {
-      id: 9,
-      productCode: 'FS001',
-      productName: 'A-One Steel Ferro Silicon',
-      category: 'Ferro Silicon',
-      currentStock: 120,
-      minStock: 50,
-      maxStock: 200,
-      unitPrice: 145000,
-      totalValue: 17400000,
-      lastUpdated: '2025-01-08 08:45 AM',
-      status: 'Good',
-      unit: 'tons'
-    }
-  ];
+  // Step 1: Get Access Token
+  const getAccessToken = async () => {
+    const salesforceUrl =
+      "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token";
+    const clientId =
+      "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl";
+    const clientSecret =
+      "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891";
 
-  const filteredStocks = stockItems.filter(item =>
-    item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.productCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    const params = new URLSearchParams();
+    params.append("grant_type", "client_credentials");
+    params.append("client_id", clientId);
+    params.append("client_secret", clientSecret);
 
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'Good': return 'bg-green-100 text-green-800';
-      case 'Low': return 'bg-yellow-100 text-yellow-800';
-      case 'Out of Stock': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+    try {
+      const response = await axios.post(salesforceUrl, params, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      setAccessToken(response.data.access_token);
+    } catch (err: unknown) {
+      const errorMessage = axios.isAxiosError(err)
+        ? err.response?.data?.message || err.message
+        : "Unknown error occurred";
+      console.error("❌ Error fetching access token:", errorMessage);
+      setError("Failed to fetch access token.");
     }
   };
 
-  const getStockPercentage = (current: number, max: number) => {
+  // Step 2: Fetch Inventory Data
+  const fetchInventoryData = async () => {
+    if (!accessToken) return;
+
+    try {
+      const query = `SELECT Id, Name, Product__r.Name, Category__c, Current_Stock__c, Status__c, Minimum_Stock__c, Unit_Price__c, Inventory_Value__c, Last_Updated__c FROM Inventory__c where Distributor_Name__r.Name = 'GR Trading Company'`;
+      const encodedQuery = encodeURIComponent(query);
+      const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${encodedQuery}`;
+
+      const response = await axios.get(queryUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const records: InventoryRecord[] = response.data.records;
+      setInventoryItems(records);
+      setLoading(false);
+    } catch (err: unknown) {
+      const errorMessage = axios.isAxiosError(err)
+        ? err.response?.data?.message || err.message
+        : "Unknown error occurred";
+      console.error("❌ Error fetching data:", errorMessage);
+      setError("Failed to fetch data from Salesforce.");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAccessToken();
+  }, []);
+
+  useEffect(() => {
+    if (accessToken) {
+      fetchInventoryData();
+    }
+  }, [accessToken]);
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "In Stock": return "bg-green-100 text-green-800";
+    case "Low Stock": return "bg-yellow-100 text-yellow-800";
+    case "Out of Stock": return "bg-red-100 text-red-800";
+    default: return "bg-gray-100 text-gray-800";
+  }
+};
+
+  const getStockPercentage = (current: number, min: number) => {
+    const max = min * 3; // Assuming max stock is 3x min stock
     return Math.round((current / max) * 100);
   };
 
-  const totalStockValue = stockItems.reduce((sum, item) => sum + item.totalValue, 0);
-  const lowStockItems = stockItems.filter(item => item.currentStock <= item.minStock).length;
-  const outOfStockItems = stockItems.filter(item => item.currentStock === 0).length;
+  // Filter inventory items based on search term
+  const filteredInventory = inventoryItems.filter(item =>
+    (item.Product__r?.Name || item.Name).toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.Category__c.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Calculate summary statistics
+  const totalItems = inventoryItems.reduce((sum, item) => sum + (item.Current_Stock__c || 0), 0);
+  const lowStockItems = inventoryItems.filter(item => 
+    item.Status__c === "Low Stock" || (item.Current_Stock__c || 0) <= (item.Minimum_Stock__c || 0)
+  ).length;
+  const outOfStockItems = inventoryItems.filter(item => 
+    (item.Current_Stock__c || 0) === 0
+  ).length;
+  const totalInventoryValue = inventoryItems.reduce((sum, item) => sum + (item.Inventory_Value__c || 0), 0);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading inventory data...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-600">{error}</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -184,8 +167,8 @@ const Stocks = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">A-One Steel Materials Stock</h1>
-            <p className="text-gray-600">Monitor and manage your A-One Steel construction materials inventory</p>
+            <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
+            <p className="text-gray-600">Track your stock levels and movements</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline">
@@ -205,8 +188,8 @@ const Stocks = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Stock Value</p>
-                  <p className="text-2xl font-bold">₹{(totalStockValue / 100000).toFixed(1)}L</p>
+                  <p className="text-sm text-gray-600">Total Products</p>
+                  <p className="text-2xl font-bold">{inventoryItems.length}</p>
                 </div>
                 <div className="bg-blue-100 p-2 rounded-lg">
                   <Package className="h-5 w-5 text-blue-600" />
@@ -218,8 +201,8 @@ const Stocks = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Material Categories</p>
-                  <p className="text-2xl font-bold">{stockItems.length}</p>
+                  <p className="text-sm text-gray-600">Total Stock</p>
+                  <p className="text-2xl font-bold">{totalItems}</p>
                 </div>
                 <div className="bg-green-100 p-2 rounded-lg">
                   <TrendingUp className="h-5 w-5 text-green-600" />
@@ -244,8 +227,8 @@ const Stocks = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Out of Stock</p>
-                  <p className="text-2xl font-bold text-red-600">{outOfStockItems}</p>
+                  <p className="text-sm text-gray-600">Inventory Value</p>
+                  <p className="text-2xl font-bold">₹{totalInventoryValue.toFixed(2)}</p>
                 </div>
                 <div className="bg-red-100 p-2 rounded-lg">
                   <TrendingDown className="h-5 w-5 text-red-600" />
@@ -255,15 +238,15 @@ const Stocks = () => {
           </Card>
         </div>
 
-        {/* Stock Table */}
+        {/* Inventory Table */}
         <Card>
           <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <CardTitle>A-One Steel Materials Inventory</CardTitle>
+              <CardTitle>Inventory Overview</CardTitle>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search A-One Steel materials..."
+                  placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 w-64"
@@ -280,25 +263,24 @@ const Stocks = () => {
                   <TableHead>Current Stock</TableHead>
                   <TableHead>Stock Level</TableHead>
                   <TableHead>Unit Price</TableHead>
-                  <TableHead>Total Value</TableHead>
+                  <TableHead>Inventory Value</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Last Updated</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStocks.map((item) => (
-                  <TableRow key={item.id}>
+                {filteredInventory.map((item) => (
+                  <TableRow key={item.Id}>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{item.productName}</p>
-                        <p className="text-sm text-gray-500">{item.productCode}</p>
+                        <p className="font-medium">{item.Product__r?.Name || item.Name}</p>
+                        <p className="text-sm text-gray-500">{item.Name}</p>
                       </div>
                     </TableCell>
-                    <TableCell>{item.category}</TableCell>
+                    <TableCell>{item.Category__c}</TableCell>
                     <TableCell>
                       <div>
-                        <p className="font-medium">{item.currentStock.toLocaleString()} {item.unit}</p>
-                        <p className="text-xs text-gray-500">Min: {item.minStock.toLocaleString()} | Max: {item.maxStock.toLocaleString()}</p>
+                        <p className="font-medium">{item.Current_Stock__c || 0}</p>
+                        <p className="text-xs text-gray-500">Min: {item.Minimum_Stock__c || 0}</p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -306,26 +288,23 @@ const Stocks = () => {
                         <div className="w-20 bg-gray-200 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full ${
-                              getStockPercentage(item.currentStock, item.maxStock) > 50 ? 'bg-green-500' :
-                              getStockPercentage(item.currentStock, item.maxStock) > 20 ? 'bg-yellow-500' : 'bg-red-500'
+                              getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1) > 50 ? 'bg-green-500' :
+                              getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1) > 20 ? 'bg-yellow-500' : 'bg-red-500'
                             }`}
-                            style={{ width: `${getStockPercentage(item.currentStock, item.maxStock)}%` }}
+                            style={{ width: `${getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1)}%` }}
                           />
                         </div>
                         <p className="text-xs text-gray-500">
-                          {getStockPercentage(item.currentStock, item.maxStock)}%
+                          {getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1)}%
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell>₹{item.unitPrice.toLocaleString()}</TableCell>
-                    <TableCell>₹{item.totalValue.toLocaleString()}</TableCell>
+                    <TableCell>₹{item.Unit_Price__c?.toFixed(2)}</TableCell>
+                    <TableCell>₹{item.Inventory_Value__c?.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(item.status)}>
-                        {item.status}
+                      <Badge className={getStatusColor(item.Status__c)}>
+                        {item.Status__c}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <p className="text-sm">{item.lastUpdated}</p>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -338,4 +317,4 @@ const Stocks = () => {
   );
 };
 
-export default Stocks;
+export default Inventory;
