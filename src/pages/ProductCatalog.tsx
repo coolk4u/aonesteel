@@ -206,7 +206,7 @@ const ProductCatalog = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map(product => (
-            <Card key={product.id} className="hover:shadow-lg transition-shadow">
+            <Card key={product.id} className="hover:shadow-lg transition-shadow flex flex-col h-full">
               <div className="relative">
                 <img
                   src={product.image}
@@ -228,11 +228,11 @@ const ProductCatalog = () => {
                 </div> */}
               </div>
 
-              <CardContent className="p-4">
-                <div className="space-y-3">
+              <CardContent className="p-4 flex flex-col flex-grow">
+                <div className="space-y-3 flex-grow">
                   <div>
                     <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
-                    <p className="text-sm text-gray-600">{product.description}</p>
+                    <p className="text-sm text-gray-600 line-clamp-3">{product.description}</p>
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -269,7 +269,9 @@ const ProductCatalog = () => {
                       </div>
                     ))}
                   </div>
+                </div>
 
+                <div className="mt-auto pt-4">
                   <Button
                     onClick={() => addToCart(product)}
                     disabled={!product.inStock}
