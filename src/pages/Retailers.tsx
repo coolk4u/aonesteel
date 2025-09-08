@@ -273,7 +273,7 @@ const Visit = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Site Details</TableHead>
-                  <TableHead>Builder</TableHead>
+                  <TableHead>Dealer</TableHead>
                   <TableHead>Address</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Field Visits</TableHead>

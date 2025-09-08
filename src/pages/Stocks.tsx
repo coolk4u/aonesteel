@@ -261,7 +261,7 @@ const getStatusColor = (status: string) => {
                   <TableHead>Product Details</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Current Stock</TableHead>
-                  <TableHead>Stock Level</TableHead>
+                  {/* <TableHead>Stock Level</TableHead> */}
                   <TableHead>Unit Price</TableHead>
                   <TableHead>Inventory Value</TableHead>
                   <TableHead>Status</TableHead>
@@ -283,7 +283,7 @@ const getStatusColor = (status: string) => {
                         <p className="text-xs text-gray-500">Min: {item.Minimum_Stock__c || 0}</p>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <div className="space-y-1">
                         <div className="w-20 bg-gray-200 rounded-full h-2">
                           <div 
@@ -298,7 +298,7 @@ const getStatusColor = (status: string) => {
                           {getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1)}%
                         </p>
                       </div>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>₹{item.Unit_Price__c?.toFixed(2)}</TableCell>
                     <TableCell>₹{item.Inventory_Value__c?.toFixed(2)}</TableCell>
                     <TableCell>
