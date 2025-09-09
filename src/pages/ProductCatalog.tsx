@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Search,
   Filter,
@@ -12,10 +12,10 @@ import {
   Percent,
   Gift,
   Zap,
-} from 'lucide-react';
-import DashboardLayout from '@/components/Layout/DashboardLayout';
-import { toast } from '@/hooks/use-toast';
-import axios from 'axios';
+} from "lucide-react";
+import DashboardLayout from "@/components/Layout/DashboardLayout";
+import { toast } from "@/hooks/use-toast";
+import axios from "axios";
 
 interface Product {
   id: string;
@@ -34,23 +34,26 @@ interface Product {
 
 const ProductCatalog = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [cart, setCart] = useState<any[]>([]);
 
   const fetchProducts = async () => {
-    const tokenUrl = 'https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token';
-    const clientId = '3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl';
-    const clientSecret = 'D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891';
+    const tokenUrl =
+      "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token";
+    const clientId =
+      "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl";
+    const clientSecret =
+      "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891";
 
     const params = new URLSearchParams();
-    params.append('grant_type', 'client_credentials');
-    params.append('client_id', clientId);
-    params.append('client_secret', clientSecret);
+    params.append("grant_type", "client_credentials");
+    params.append("client_id", clientId);
+    params.append("client_secret", clientSecret);
 
     try {
       const tokenResponse = await axios.post(tokenUrl, params, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       const accessToken = tokenResponse.data.access_token;
 
@@ -61,61 +64,69 @@ const ProductCatalog = () => {
         WHERE Family = 'Steel'
         ORDER BY CreatedDate DESC
         LIMIT 200
-      `.replace(/\s+/g, '+');
+      `.replace(/\s+/g, "+");
 
       const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
 
       const response = await axios.get(queryUrl, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       const salesforceProducts = response.data.records.map((record: any) => ({
         id: record.Id,
         name: record.Name,
-        category: record.Family || 'General',
+        category: record.Family || "General",
         price: record.PricebookEntries?.records?.[0]?.UnitPrice || 0,
         mrp: (record.PricebookEntries?.[0]?.UnitPrice || 0) * 1.1, // assume 10% markup
-        image: record.Prod_Img_Url__c || 'https://via.placeholder.com/150', // Fixed field name
+        image: record.Prod_Img_Url__c || "https://via.placeholder.com/150", // Fixed field name
         rating: Math.random() * 2 + 3, // Random rating between 3 and 5
         inStock: record.IsActive,
         description: record.Description,
-        schemes: ['Bulk Discount Available', 'Limited Time Offer'],
+        schemes: ["Bulk Discount Available", "Limited Time Offer"],
         minOrderQty: 10,
-        unit: 'units',
+        unit: "units",
       }));
 
       setProducts(salesforceProducts);
     } catch (error) {
-      console.error('Error fetching product data:', error);
+      console.error("Error fetching product data:", error);
     }
   };
 
   useEffect(() => {
     fetchProducts();
-    const savedCart = localStorage.getItem('cart');
+    const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
   }, []);
 
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+  const categories = [
+    "All",
+    ...Array.from(new Set(products.map((p) => p.category))),
+  ];
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const addToCart = (product: Product, quantity: number = product.minOrderQty) => {
-    const existingItem = cart.find(item => item.id === product.id);
+  const addToCart = (
+    product: Product,
+    quantity: number = product.minOrderQty
+  ) => {
+    const existingItem = cart.find((item) => item.id === product.id);
     let newCart;
 
     if (existingItem) {
-      newCart = cart.map(item =>
+      newCart = cart.map((item) =>
         item.id === product.id
           ? { ...item, quantity: item.quantity + quantity }
           : item
@@ -125,7 +136,7 @@ const ProductCatalog = () => {
     }
 
     setCart(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
+    localStorage.setItem("cart", JSON.stringify(newCart));
 
     toast({
       title: "Added to Cart",
@@ -138,8 +149,10 @@ const ProductCatalog = () => {
   };
 
   // Handle image loading errors
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://via.placeholder.com/150';
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    e.currentTarget.src = "https://via.placeholder.com/150";
   };
 
   return (
@@ -147,8 +160,13 @@ const ProductCatalog = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">A-One Steel Materials Catalog</h1>
-            <p className="text-gray-600">Browse and order from our extensive A-One Steel TMT and construction materials range</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              A-One Steel Materials Catalog
+            </h1>
+            <p className="text-gray-600">
+              Browse and order from our extensive A-One Steel TMT and
+              construction materials range
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             <Badge variant="secondary" className="bg-green-100 text-green-800">
@@ -174,13 +192,19 @@ const ProductCatalog = () => {
               />
             </div>
             <div className="flex space-x-2">
-              {categories.map(category => (
+              {categories.map((category) => (
                 <Button
                   key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
+                  variant={
+                    selectedCategory === category ? "default" : "outline"
+                  }
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
-                  className="whitespace-nowrap"
+                  className={`whitespace-nowrap ${
+                    category === "All"
+                      ? "bg-gradient-to-br from-red-800 via-red-600 to-red-900 text-white"
+                      : ""
+                  }`}
                 >
                   {category}
                 </Button>
@@ -189,7 +213,7 @@ const ProductCatalog = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-lg p-4 text-white">
+        <div className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 rounded-lg p-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="bg-white/20 p-2 rounded-full">
@@ -197,7 +221,10 @@ const ProductCatalog = () => {
               </div>
               <div>
                 <h3 className="font-bold">A-One Steel Special Offers!</h3>
-                <p className="text-sm text-orange-100">TMT Bar schemes • Bulk discounts • Free transport • Quality guarantee</p>
+                <p className="text-sm text-orange-100">
+                  TMT Bar schemes • Bulk discounts • Free transport • Quality
+                  guarantee
+                </p>
               </div>
             </div>
             <Zap className="h-8 w-8 text-yellow-300" />
@@ -205,8 +232,11 @@ const ProductCatalog = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map(product => (
-            <Card key={product.id} className="hover:shadow-lg transition-shadow flex flex-col h-full">
+          {filteredProducts.map((product) => (
+            <Card
+              key={product.id}
+              className="hover:shadow-lg transition-shadow flex flex-col h-full"
+            >
               <div className="relative">
                 <img
                   src={product.image}
@@ -231,8 +261,12 @@ const ProductCatalog = () => {
               <CardContent className="p-4 flex flex-col flex-grow">
                 <div className="space-y-3 flex-grow">
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-3">{product.description}</p>
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 line-clamp-3">
+                      {product.description}
+                    </p>
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -242,19 +276,25 @@ const ProductCatalog = () => {
                           key={i}
                           className={`h-4 w-4 ${
                             i < Math.floor(product.rating)
-                              ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300'
+                              ? "text-yellow-400 fill-current"
+                              : "text-gray-300"
                           }`}
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">({product.rating.toFixed(1)})</span>
+                    <span className="text-sm text-gray-600">
+                      ({product.rating.toFixed(1)})
+                    </span>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-2xl font-bold text-gray-900">₹{product.price}</span>
-                      <span className="text-sm text-gray-500 line-through ml-2">₹{product.mrp}</span>
+                      <span className="text-2xl font-bold text-gray-900">
+                        ₹{product.price}
+                      </span>
+                      <span className="text-sm text-gray-500 line-through ml-2">
+                        ₹{product.mrp}
+                      </span>
                     </div>
                     <Badge variant="outline" className="text-xs">
                       Min: {product.minOrderQty} {product.unit}
@@ -263,7 +303,10 @@ const ProductCatalog = () => {
 
                   <div className="space-y-1">
                     {product.schemes.map((scheme, index) => (
-                      <div key={index} className="flex items-center text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                      <div
+                        key={index}
+                        className="flex items-center text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded"
+                      >
                         <Percent className="h-3 w-3 mr-1" />
                         {scheme}
                       </div>
@@ -275,7 +318,7 @@ const ProductCatalog = () => {
                   <Button
                     onClick={() => addToCart(product)}
                     disabled={!product.inStock}
-                    className="w-full"
+                    className="w-full bg-gradient-to-br from-red-800 via-red-600 to-red-900"
                   >
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     Add {product.minOrderQty} {product.unit} to Cart
@@ -289,8 +332,12 @@ const ProductCatalog = () => {
         {filteredProducts.length === 0 && (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No products found
+            </h3>
+            <p className="text-gray-600">
+              Try adjusting your search or filter criteria
+            </p>
           </div>
         )}
       </div>

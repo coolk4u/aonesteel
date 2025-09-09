@@ -68,8 +68,8 @@ const Profile = () => {
           </div>
           <div className="flex gap-2">
             {!isEditing ? (
-              <Button onClick={() => setIsEditing(true)} className="bg-blue-600 hover:bg-blue-700">
-                <Edit className="h-4 w-4 mr-2" />
+              <Button onClick={() => setIsEditing(true)} className="bg-gradient-to-br from-red-800 via-red-600 to-red-900">
+                <Edit className=" h-4 w-4 mr-2" />
                 Edit Profile
               </Button>
             ) : (
@@ -77,7 +77,7 @@ const Profile = () => {
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
+                <Button onClick={handleSave} className="bg-gradient-to-br from-red-800 via-red-600 to-red-900">
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
@@ -92,8 +92,8 @@ const Profile = () => {
             <Card>
               <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">
-                  <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="h-12 w-12 text-blue-600" />
+                  <div className="w-24 h-24 bg-gradient-to-br from-red-800 via-red-600 to-red-900 rounded-full flex items-center justify-center">
+                    <User className="h-12 w-12 text-white" />
                   </div>
                 </div>
                 <CardTitle className="text-xl">{profileData.name}</CardTitle>

@@ -1,28 +1,28 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import DashboardLayout from '@/components/Layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { 
-  Search, 
-  MapPin, 
-  Phone, 
-  Mail, 
+import { useEffect, useState } from "react";
+import axios from "axios";
+import DashboardLayout from "@/components/Layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Search,
+  MapPin,
+  Phone,
+  Mail,
   Plus,
   Eye,
   Edit,
-  Star
-} from 'lucide-react';
+  Star,
+} from "lucide-react";
 
 interface ProjectSiteRecord {
   Id: string;
@@ -48,7 +48,7 @@ interface ProjectSiteRecord {
 }
 
 const Visit = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [projectSites, setProjectSites] = useState<ProjectSiteRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +89,16 @@ const Visit = () => {
   // Step 2: Fetch data from Salesforce
   const fetchData = async (token: string) => {
     try {
-      const query = `SELECT Id, Name, Location__Street__s, Location__City__s, Location__CountryCode__s, Location__PostalCode__s, Start_Date__c, Is_Existing_Customer__c, Status__c, Builder_Account__r.Name, (Select Id, Field_Officer__c, Check_In__c, Check_Out__c from Field_Visits__r) FROM Project_Site__c Where Builder_Account__r.Name = 'GR Trading Company'`;
+      const query = `SELECT Id, Name, Location__Street__s, Location__City__s, Location__CountryCode__s, 
+       Location__PostalCode__s, Start_Date__c, Is_Existing_Customer__c, Status__c, 
+       Field_Officer__r.Name, 
+       (SELECT Id, Field_Officer__c, Check_In__c, Check_Out__c FROM Field_Visits__r)
+FROM Project_Site__c
+WHERE Id IN (
+    SELECT Project_Site__c 
+    FROM ProjectDistributor__c 
+    WHERE Distributor__r.Name = 'GR Trading Company'
+)`;
       const encodedQuery = encodeURIComponent(query);
       const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${encodedQuery}`;
 
@@ -133,14 +142,20 @@ const Visit = () => {
     initializeData();
   }, []);
 
-  const filteredSites = projectSites.filter(site =>
-    site.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (site.Builder_Account__r?.Name && site.Builder_Account__r.Name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredSites = projectSites.filter(
+    (site) =>
+      site.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (site.Builder_Account__r?.Name &&
+        site.Builder_Account__r.Name.toLowerCase().includes(
+          searchTerm.toLowerCase()
+        ))
   );
 
   const getStatusColor = (status: string | undefined) => {
-    if (!status) return 'bg-gray-100 text-gray-800';
-    return status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+    if (!status) return "bg-gray-100 text-gray-800";
+    return status === "Active"
+      ? "bg-green-100 text-green-800"
+      : "bg-red-100 text-red-800";
   };
 
   const formatAddress = (site: ProjectSiteRecord) => {
@@ -148,10 +163,10 @@ const Visit = () => {
       site.Location__Street__s,
       site.Location__City__s,
       site.Location__PostalCode__s,
-      site.Location__CountryCode__s
-    ].filter(part => part);
-    
-    return parts.join(', ') || 'Address not available';
+      site.Location__CountryCode__s,
+    ].filter((part) => part);
+
+    return parts.join(", ") || "Address not available";
   };
 
   if (loading) {
@@ -181,9 +196,11 @@ const Visit = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Project Sites</h1>
-            <p className="text-gray-600">Manage your project sites and field visits</p>
+            <p className="text-gray-600">
+              Manage your project sites and field visits
+            </p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-gradient-to-br from-red-800 via-red-600 to-red-900">
             <Plus className="h-4 w-4 mr-2" />
             Add New Site
           </Button>
@@ -210,7 +227,10 @@ const Visit = () => {
                 <div>
                   <p className="text-sm text-gray-600">Active Sites</p>
                   <p className="text-2xl font-bold">
-                    {projectSites.filter(site => site.Status__c === 'Active').length}
+                    {
+                      projectSites.filter((site) => site.Status__c === "Active")
+                        .length
+                    }
                   </p>
                 </div>
                 <div className="bg-green-100 p-2 rounded-lg">
@@ -225,7 +245,11 @@ const Visit = () => {
                 <div>
                   <p className="text-sm text-gray-600">Existing Customers</p>
                   <p className="text-2xl font-bold">
-                    {projectSites.filter(site => site.Is_Existing_Customer__c).length}
+                    {
+                      projectSites.filter(
+                        (site) => site.Is_Existing_Customer__c
+                      ).length
+                    }
                   </p>
                 </div>
                 <div className="bg-orange-100 p-2 rounded-lg">
@@ -240,8 +264,11 @@ const Visit = () => {
                 <div>
                   <p className="text-sm text-gray-600">Field Visits</p>
                   <p className="text-2xl font-bold">
-                    {projectSites.reduce((total, site) => 
-                      total + (site.Field_Visits__r?.records?.length || 0), 0)}
+                    {projectSites.reduce(
+                      (total, site) =>
+                        total + (site.Field_Visits__r?.records?.length || 0),
+                      0
+                    )}
                   </p>
                 </div>
                 <div className="bg-purple-100 p-2 rounded-lg">
@@ -288,13 +315,17 @@ const Visit = () => {
                         <div>
                           <p className="font-medium">{site.Name}</p>
                           <p className="text-sm text-gray-500">
-                            {site.Start_Date__c ? new Date(site.Start_Date__c).toLocaleDateString() : 'No start date'}
+                            {site.Start_Date__c
+                              ? new Date(
+                                  site.Start_Date__c
+                                ).toLocaleDateString()
+                              : "No start date"}
                           </p>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          {site.Builder_Account__r?.Name || 'N/A'}
+                          {site.Builder_Account__r?.Name || "N/A"}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -305,10 +336,12 @@ const Visit = () => {
                       </TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(site.Status__c)}>
-                          {site.Status__c || 'Unknown'}
+                          {site.Status__c || "Unknown"}
                         </Badge>
                         <div className="text-xs text-gray-500 mt-1">
-                          {site.Is_Existing_Customer__c ? 'Existing Customer' : 'New Customer'}
+                          {site.Is_Existing_Customer__c
+                            ? "Existing Customer"
+                            : "New Customer"}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -316,11 +349,15 @@ const Visit = () => {
                           <p className="text-sm">
                             {site.Field_Visits__r?.records?.length || 0} visits
                           </p>
-                          {site.Field_Visits__r?.records && site.Field_Visits__r.records.length > 0 && (
-                            <p className="text-xs text-gray-500">
-                              Last: {new Date(site.Field_Visits__r.records[0].Check_In__c).toLocaleDateString()}
-                            </p>
-                          )}
+                          {site.Field_Visits__r?.records &&
+                            site.Field_Visits__r.records.length > 0 && (
+                              <p className="text-xs text-gray-500">
+                                Last:{" "}
+                                {new Date(
+                                  site.Field_Visits__r.records[0].Check_In__c
+                                ).toLocaleDateString()}
+                              </p>
+                            )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -337,7 +374,10 @@ const Visit = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                    <TableCell
+                      colSpan={6}
+                      className="text-center py-8 text-gray-500"
+                    >
                       No project sites found
                     </TableCell>
                   </TableRow>

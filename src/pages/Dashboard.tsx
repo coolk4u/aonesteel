@@ -11,7 +11,6 @@ const Dashboard = () => {
     change: '+15.2%',
     trend: 'up',
     icon: IndianRupee,
-    gradient: 'bg-gradient-orange',
     textColor: 'text-white'
   }, {
     title: 'Orders Placed',
@@ -19,7 +18,6 @@ const Dashboard = () => {
     change: '+12.5%',
     trend: 'up', 
     icon: ShoppingCart,
-    gradient: 'bg-gradient-blue',
     textColor: 'text-white'
   }, {
     title: 'Order Pending Delivery',
@@ -27,7 +25,6 @@ const Dashboard = () => {
     change: '+1',
     trend: 'up',
     icon: Package,
-    gradient: 'bg-gradient-teal',
     textColor: 'text-white'
   }, {
     title: 'Available Credit',
@@ -35,7 +32,6 @@ const Dashboard = () => {
     change: '+4.2%',
     trend: 'up',
     icon: Target,
-    gradient: 'bg-gradient-green',
     textColor: 'text-white'
   }];
   const recentOrders = [{
@@ -83,7 +79,7 @@ const Dashboard = () => {
   return <DashboardLayout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-gradient-purple rounded-2xl p-8 text-white shadow-glow">
+        <div className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 rounded-2xl p-4 text-white shadow-glow">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-3">Welcome to A-One Steel Portal</h1>
@@ -100,8 +96,8 @@ const Dashboard = () => {
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {metrics.map((metric, index) => 
-            <Card key={index} className={`${metric.gradient} hover:shadow-soft transition-all duration-300 hover:scale-105 border-0`}>
-              <CardContent className="p-6">
+            <Card key={index} className={`bg-gradient-to-br from-red-800 via-red-600 to-red-900 hover:shadow-soft transition-all duration-300 hover:scale-105 border-0`}>
+              <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-sm font-medium mb-2 ${metric.textColor} opacity-90`}>{metric.title}</p>
@@ -192,23 +188,23 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <Card className="shadow-soft border-0">
+        <Card className=" shadow-soft border-0">
           <CardHeader>
             <CardTitle className="text-foreground">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button className="h-24 flex flex-col space-y-3 bg-gradient-purple text-white hover:opacity-90 transition-opacity rounded-xl shadow-soft" onClick={() => navigate('/catalog')}>
-                <Package className="h-7 w-7" />
+              <Button className="h-24 flex flex-col space-y-3 bg-gradient-to-br from-red-800 via-red-600 to-red-900 text-white hover:opacity-90 transition-opacity rounded-xl shadow-soft" onClick={() => navigate('/catalog')}>
+                <Package className=" h-7 w-7" />
                 <span className="font-medium">Browse TMT Products</span>
               </Button>
-              <Button variant="outline" className="h-24 flex flex-col space-y-3 border-2 border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => navigate('/cart')}>
-                <ShoppingCart className="h-7 w-7 text-primary" />
-                <span className="font-medium text-foreground">View Cart</span>
+              <Button variant="outline" className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 h-24 flex flex-col space-y-3 border-2 border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => navigate('/cart')}>
+                <ShoppingCart className="h-7 w-7 text-primary text-white" />
+                <span className="font-medium text-white">View Cart</span>
               </Button>
-              <Button variant="outline" className="h-24 flex flex-col space-y-3 border-2 border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => navigate('/orders')}>
-                <Calendar className="h-7 w-7 text-primary" />
-                <span className="font-medium text-foreground">Order History</span>
+              <Button variant="outline" className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 h-24 flex flex-col space-y-3 border-2 border-primary/20 hover:bg-primary/5 rounded-xl" onClick={() => navigate('/orders')}>
+                <Calendar className="h-7 w-7 text-primary text-white" />
+                <span className="font-medium text-white">Order History</span>
               </Button>
             </div>
           </CardContent>

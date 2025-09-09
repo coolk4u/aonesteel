@@ -176,9 +176,9 @@ const CartTemplate = ({ currentCart, onAddToCart }: CartTemplateProps) => {
               {!isCreating ? (
                 <Button 
                   onClick={() => setIsCreating(true)}
-                  className="w-full"
+                  className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 w-full"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className=" h-4 w-4 mr-2" />
                   Save as Template
                 </Button>
               ) : (
