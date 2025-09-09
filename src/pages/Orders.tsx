@@ -1,11 +1,19 @@
 // orders.tsx
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { FileText, Package, Truck, CheckCircle, Clock, IndianRupee, Calendar } from 'lucide-react';
-import DashboardLayout from '@/components/Layout/DashboardLayout';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  FileText,
+  Package,
+  Truck,
+  CheckCircle,
+  Clock,
+  IndianRupee,
+  Calendar,
+} from "lucide-react";
+import DashboardLayout from "@/components/Layout/DashboardLayout";
 
 interface OrderItem {
   name: string;
@@ -21,7 +29,7 @@ interface Order {
   subtotal: number;
   tax: number;
   total: number;
-  status: 'Processing' | 'Shipped' | 'Delivered' | 'Pending';
+  status: "Processing" | "Shipped" | "Delivered" | "Pending";
 }
 
 const Orders = () => {
@@ -31,46 +39,59 @@ const Orders = () => {
     const fetchOrders = async () => {
       try {
         const authResponse = await axios.post(
-          'https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token',
+          "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token",
           new URLSearchParams({
-            grant_type: 'client_credentials',
-            client_id: '3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl',
-            client_secret: 'D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891',
+            grant_type: "client_credentials",
+            client_id:
+              "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl",
+            client_secret:
+              "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891",
           }),
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
 
         const accessToken = authResponse.data.access_token;
 
         const query = `
-          SELECT OrderNumber, Status, EffectiveDate, AccountId,
-          (SELECT Quantity, UnitPrice, TotalPrice,
-                  PricebookEntry.Product2.Name,
-                  PricebookEntry.Product2.ProductCode,
-                  PricebookEntry.Product2.Description
-           FROM OrderItems)
-          FROM Order
-          ORDER BY CreatedDate DESC
-          LIMIT 200
-        `.replace(/\s+/g, '+');
+SELECT 
+    OrderNumber, 
+    Status, 
+    EffectiveDate, 
+    AccountId,
+    (SELECT 
+        Quantity, 
+        UnitPrice, 
+        TotalPrice,
+        PricebookEntry.Product2.Name,
+        PricebookEntry.Product2.ProductCode,
+        PricebookEntry.Product2.Description
+     FROM OrderItems)
+FROM Order
+WHERE CreatedDate = TODAY
+ORDER BY CreatedDate DESC
+LIMIT 200
+        `.replace(/\s+/g, "+");
 
         const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
         const response = await axios.get(queryUrl, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 
         const fetchedOrders = response.data.records.map((order: any) => {
           const items = (order.OrderItems?.records || []).map((item: any) => ({
-            name: item.PricebookEntry?.Product2?.Name || 'Unknown',
+            name: item.PricebookEntry?.Product2?.Name || "Unknown",
             quantity: item.Quantity,
             price: item.UnitPrice,
-            unit: 'units',
+            unit: "units",
           }));
 
-          const subtotal = items.reduce((sum: number, item: OrderItem) => sum + item.quantity * item.price, 0);
+          const subtotal = items.reduce(
+            (sum: number, item: OrderItem) => sum + item.quantity * item.price,
+            0
+          );
           const tax = Math.round(subtotal * 0.18);
           const total = subtotal + tax;
 
@@ -81,13 +102,13 @@ const Orders = () => {
             subtotal,
             tax,
             total,
-            status: order.Status || 'Pending',
+            status: order.Status || "Pending",
           };
         });
 
         setOrders(fetchedOrders);
       } catch (error) {
-        console.error('Failed to fetch orders:', error);
+        console.error("Failed to fetch orders:", error);
       }
     };
 
@@ -96,20 +117,29 @@ const Orders = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'Processing': return <Clock className="h-4 w-4" />;
-      case 'Shipped': return <Truck className="h-4 w-4" />;
-      case 'Delivered': return <CheckCircle className="h-4 w-4" />;
-      default: return <Package className="h-4 w-4" />;
+      case "Processing":
+        return <Clock className="h-4 w-4" />;
+      case "Shipped":
+        return <Truck className="h-4 w-4" />;
+      case "Delivered":
+        return <CheckCircle className="h-4 w-4" />;
+      default:
+        return <Package className="h-4 w-4" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Processing': return 'bg-blue-100 text-blue-800';
-      case 'Shipped': return 'bg-purple-100 text-purple-800';
-      case 'Delivered': return 'bg-green-100 text-green-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "Processing":
+        return "bg-blue-100 text-blue-800";
+      case "Shipped":
+        return "bg-purple-100 text-purple-800";
+      case "Delivered":
+        return "bg-green-100 text-green-800";
+      case "Pending":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -132,13 +162,20 @@ const Orders = () => {
         {orders.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
-            <p className="text-gray-600">Start shopping to see your orders here</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No orders yet
+            </h3>
+            <p className="text-gray-600">
+              Start shopping to see your orders here
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {orders.map(order => (
-              <Card key={order.id} className="hover:shadow-lg transition-shadow">
+            {orders.map((order) => (
+              <Card
+                key={order.id}
+                className="hover:shadow-lg transition-shadow"
+              >
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
@@ -164,7 +201,9 @@ const Orders = () => {
                         {getStatusIcon(order.status)}
                         <span className="ml-1">{order.status}</span>
                       </Badge>
-                      <div className="text-lg font-bold text-gray-900">₹{order.total}</div>
+                      <div className="text-lg font-bold text-gray-900">
+                        ₹{order.total}
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
@@ -172,9 +211,14 @@ const Orders = () => {
                 <CardContent className="pt-0">
                   <div className="space-y-2 mb-4">
                     {order.items.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      >
                         <div>
-                          <p className="font-medium text-gray-900">{item.name}</p>
+                          <p className="font-medium text-gray-900">
+                            {item.name}
+                          </p>
                           <p className="text-sm text-gray-600">
                             {item.quantity} {item.unit} × ₹{item.price}
                           </p>
