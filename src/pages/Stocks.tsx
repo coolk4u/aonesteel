@@ -175,7 +175,7 @@ const getStatusColor = (status: string) => {
               <Download className="h-4 w-4 mr-2" />
               Export Stock Report
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-gradient-to-br from-red-800 via-red-600 to-red-900">
               <Upload className="h-4 w-4 mr-2" />
               Update Stock Levels
             </Button>

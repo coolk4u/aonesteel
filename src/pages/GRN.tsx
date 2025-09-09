@@ -132,7 +132,7 @@ const GRN = () => {
             <h1 className="text-2xl font-bold text-gray-900">Goods Receipt Note (GRN)</h1>
             <p className="text-gray-600">Track and manage received construction materials against invoices</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-gradient-to-br from-red-800 via-red-600 to-red-900">
             <Plus className="h-4 w-4 mr-2" />
             Create New GRN
           </Button>
@@ -209,14 +209,14 @@ const GRN = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pendingInvoices.map((invoice) => (
-                <Card key={invoice.id} className="border-l-4 border-l-orange-400">
+                <Card key={invoice.id} className="border-l-4 border-l-red-800">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <p className="font-medium">{invoice.invoiceNumber}</p>
                         <p className="text-sm text-gray-500">{invoice.poNumber}</p>
                       </div>
-                      <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                      <Button size="sm" className="bg-gradient-to-br from-red-800 via-red-600 to-red-900">
                         Create GRN
                       </Button>
                     </div>

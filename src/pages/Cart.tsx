@@ -409,7 +409,7 @@ const Cart = () => {
                 </div>
                 <Button
                   onClick={placeOrder}
-                  className="w-full bg-green-600 hover:bg-green-700"
+                  className="w-full bg-gradient-to-br from-red-800 via-red-600 to-red-900"
                   disabled={isPlacingOrder}
                 >
                   {isPlacingOrder ? (
@@ -464,11 +464,17 @@ const Cart = () => {
         </div>
         <Tabs defaultValue="cart" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="cart" className="flex items-center">
+            <TabsTrigger
+              value="cart"
+              className="flex items-center data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-800 data-[state=active]:via-red-600 data-[state=active]:to-red-900 data-[state=active]:text-white"
+            >
               <ShoppingCart className="h-4 w-4 mr-2" />
               Current Cart
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center">
+            <TabsTrigger
+              value="templates"
+              className="flex items-center data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-800 data-[state=active]:via-red-600 data-[state=active]:to-red-900 data-[state=active]:text-white"
+            >
               <Heart className="h-4 w-4 mr-2" />
               Saved Templates
             </TabsTrigger>
