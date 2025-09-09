@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { TrendingUp, Package, ShoppingCart, IndianRupee, Users, Target, Award, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { useNavigate } from 'react-router-dom';
+import brandambassador from './assets/Brand Ambessador.png';
 const Dashboard = () => {
   const navigate = useNavigate();
   const metrics = [{
@@ -79,8 +80,8 @@ const Dashboard = () => {
   return <DashboardLayout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 rounded-2xl p-4 text-white shadow-glow">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 p-1 text-white shadow-glow">
+          {/* <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-3">Welcome to A-One Steel Portal</h1>
               <p className="text-purple-100 text-lg">Manage your steel business with A-One Steel Group's premium TMT products</p>
@@ -90,18 +91,19 @@ const Dashboard = () => {
                 Browse TMT Products
               </Button>
             </div>
-          </div>
+          </div> */}
+          <img src={brandambassador} alt="" />
         </div>
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           {metrics.map((metric, index) => 
             <Card key={index} className={`bg-gradient-to-br from-red-800 via-red-600 to-red-900 hover:shadow-soft transition-all duration-300 hover:scale-105 border-0`}>
-              <CardContent className="p-3">
+              <CardContent className="p-2">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-sm font-medium mb-2 ${metric.textColor} opacity-90`}>{metric.title}</p>
-                    <p className={`text-3xl font-bold ${metric.textColor} mb-3`}>{metric.value}</p>
+                    <p className={`text-xl font-bold ${metric.textColor} mb-3`}>{metric.value}</p>
                     <div className="flex items-center">
                       {metric.trend === 'up' ? <ArrowUpRight className={`h-4 w-4 ${metric.textColor} mr-1 opacity-80`} /> : <ArrowDownRight className={`h-4 w-4 ${metric.textColor} mr-1 opacity-80`} />}
                       <span className={`text-sm font-medium ${metric.textColor} opacity-90`}>
