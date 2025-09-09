@@ -252,7 +252,7 @@ const Cart = () => {
           </p>
           <Button
             onClick={() => navigate("/catalog")}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-gradient-to-br from-red-800 via-red-600 to-red-900"
           >
             Browse Products
           </Button>
