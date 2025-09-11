@@ -8,12 +8,10 @@ import {
   Minus,
   Plus,
   Trash2,
-  Package,
   IndianRupee,
   Percent,
   CheckCircle,
   Heart,
-  AlertCircle,
 } from "lucide-react";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import CartTemplate from "@/components/CartTemplate/CartTemplate";
@@ -32,6 +30,9 @@ interface CartItem {
   schemes: string[];
   image: string;
   description: string;
+  bulkDiscount?: number;
+  limitedTimeOffer?: boolean;
+  limitedTimeDiscount?: number;
 }
 
 const CLIENT_ID =
@@ -111,12 +112,29 @@ const Cart = () => {
     updateCart(newCart);
   };
 
+  // ✅ Final price after discounts
+  const getFinalUnitPrice = (item: CartItem) => {
+    let discountedPrice = item.price;
+
+    if (item.bulkDiscount) {
+      discountedPrice = discountedPrice * (1 - item.bulkDiscount / 100);
+    }
+    if (item.limitedTimeOffer && item.limitedTimeDiscount) {
+      discountedPrice = discountedPrice * (1 - item.limitedTimeDiscount / 100);
+    }
+    return Math.round(discountedPrice);
+  };
+
   const calculateSubtotal = () =>
-    cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    cart.reduce((sum, item) => sum + getFinalUnitPrice(item) * item.quantity, 0);
+
   const calculateMRPTotal = () =>
     cart.reduce((sum, item) => sum + item.mrp * item.quantity, 0);
+
   const calculateSavings = () => calculateMRPTotal() - calculateSubtotal();
+
   const calculateTax = () => Math.round(calculateSubtotal() * 0.18);
+
   const calculateTotal = () => calculateSubtotal() + calculateTax();
 
   const fetchAccessToken = async () => {
@@ -153,36 +171,28 @@ const Cart = () => {
     try {
       const token = await fetchAccessToken();
 
-      // Prepare order payload
       const payload = {
-        accountId: "0015j00000R5v2FAAR", // Replace with actual account ID
+        accountId: "0015j00000R5v2FAAR",
         orderItems: cart.map((item) => ({
           productId: item.id,
           quantity: item.quantity,
-          unitPrice: item.price,
+          unitPrice: getFinalUnitPrice(item), // ✅ send discounted price
         })),
       };
 
-      console.log("Order payload:", JSON.stringify(payload, null, 2));
-
-      // Create order
       const response = await axios.post(ORDER_API_URL, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        timeout: 10000, // 10 second timeout
+        timeout: 10000,
       });
 
-      console.log("Order response:", response.data);
-
       if (response.data.success) {
-        // Clear cart and show success message
         clearCart();
         toast({
           title: "Order Placed Successfully!",
           description: `Order Number: ${response.data.orderNumber}, Contract Number: ${response.data.contractNumber}`,
-          variant: "default",
         });
         navigate("/orders");
       } else {
@@ -194,42 +204,9 @@ const Cart = () => {
       }
     } catch (error: any) {
       console.error("Error placing order:", error);
-
-      let errorMessage = "Failed to create order. Please try again later.";
-
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-
-        if (error.response.status === 400) {
-          errorMessage = "Bad request. Please check your order data.";
-        } else if (error.response.status === 401) {
-          errorMessage =
-            "Authentication failed. Please check your credentials.";
-        } else if (error.response.status === 404) {
-          errorMessage =
-            "Order service not found. Please check the endpoint URL.";
-        } else if (
-          error.response.data &&
-          error.response.data[0] &&
-          error.response.data[0].message
-        ) {
-          errorMessage = error.response.data[0].message;
-        }
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error("Error request:", error.request);
-        errorMessage = "No response from server. Please check your connection.";
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        errorMessage = error.message;
-      }
-
       toast({
         title: "Order Failed",
-        description: errorMessage,
+        description: "Something went wrong while placing the order.",
         variant: "destructive",
       });
     } finally {
@@ -279,106 +256,107 @@ const Cart = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            {cart.map((item) => (
-              <Card key={item.id}>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                    <div className="bg-gray-100 w-16 h-16 rounded-lg flex items-center justify-center shrink-0">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover rounded-lg"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            "https://via.placeholder.com/150";
-                          e.currentTarget.className =
-                            "w-full h-full object-contain rounded-lg p-2";
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg text-gray-900 truncate">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 truncate">
-                        {item.description}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-lg font-bold text-gray-900">
-                          ₹{item.price}
-                        </span>
-                        <span className="text-sm text-gray-500 line-through">
-                          ₹{item.mrp}
-                        </span>
-                        <Badge
-                          variant="secondary"
-                          className="bg-green-100 text-green-800 text-xs"
-                        >
-                          {Math.round(
-                            ((item.mrp - item.price) / item.mrp) * 100
-                          )}
-                          % OFF
-                        </Badge>
+            {cart.map((item) => {
+              const finalPrice = getFinalUnitPrice(item);
+              const total = finalPrice * item.quantity;
+              return (
+                <Card key={item.id}>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                      <div className="bg-gray-100 w-16 h-16 rounded-lg flex items-center justify-center shrink-0">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover rounded-lg"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://via.placeholder.com/150";
+                          }}
+                        />
                       </div>
-                      <div className="mt-2 space-y-1">
-                        {item.schemes?.slice(0, 2).map((scheme, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center text-xs text-orange-600"
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-lg text-gray-900 truncate">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 truncate">
+                          {item.description}
+                        </p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <span className="text-lg font-bold text-gray-900">
+                            ₹{finalPrice}
+                          </span>
+                          {/* <span className="text-sm text-gray-500 line-through">
+                            ₹{item.mrp}
+                          </span> */}
+                          {/* <Badge
+                            variant="secondary"
+                            className="bg-green-100 text-green-800 text-xs"
                           >
-                            <Percent className="h-3 w-3 mr-1" />
-                            {scheme}
-                          </div>
-                        ))}
+                            {Math.round(((item.mrp - finalPrice) / item.mrp) * 100)}% OFF
+                          </Badge> */}
+                        </div>
+                        {/* ✅ Show discounts applied */}
+                        <div className="mt-2 space-y-1">
+                          {item.bulkDiscount && (
+                            <div className="flex items-center text-xs text-green-700">
+                              <Percent className="h-3 w-3 mr-1" />
+                              {item.bulkDiscount}% Bulk Discount Applied
+                            </div>
+                          )}
+                          {item.limitedTimeOffer && item.limitedTimeDiscount && (
+                            <div className="flex items-center text-xs text-amber-700">
+                              <Percent className="h-3 w-3 mr-1" />
+                              Add 10 more units to get 5% extra discount.
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end sm:space-x-3">
-                      <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+                      <div className="flex items-center justify-between sm:justify-end sm:space-x-3">
+                        <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity - 1)
+                            }
+                            className="h-8 w-8 p-0"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-12 text-center font-medium">
+                            {item.quantity}
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
+                            className="h-8 w-8 p-0"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-lg">₹{total}</p>
+                          <p className="text-sm text-gray-500">
+                            {item.quantity} {item.unit}
+                          </p>
+                        </div>
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
-                          className="h-8 w-8 p-0"
+                          onClick={() => removeItem(item.id)}
+                          className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
                         >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-12 text-center font-medium">
-                          {item.quantity}
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
-                          className="h-8 w-8 p-0"
-                        >
-                          <Plus className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-lg">
-                          ₹{item.price * item.quantity}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {item.quantity} {item.unit}
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeItem(item.id)}
-                        className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           <div className="space-y-6">
