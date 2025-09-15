@@ -125,7 +125,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Orders */}
           <Card className="shadow-soft border-0">
-            {/* <img src={dashboardimg1} alt="" /> */}
+            <img src={dashboardimg1} alt="" />
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center justify-between text-foreground">
                 Recent Steel Orders
@@ -162,7 +162,7 @@ const Dashboard = () => {
 
           {/* Top Products */}
           <Card className="shadow-soft border-0">
-            {/* <img src={dashboardimg2} alt="" /> */}
+            <img src={dashboardimg2} alt="" />
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center justify-between text-foreground">
                 Top Selling TMT Products
