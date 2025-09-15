@@ -238,8 +238,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 size="sm"
                 className="relative hover:bg-muted/50 p-1.5 lg:p-2 text-muted-foreground hover:text-foreground"
               >
-                <Bell className="h-4 w-4 lg:h-5 lg:w-5" />
-                <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-4 w-4 lg:h-5 lg:w-5 flex items-center justify-center">
+                <Bell className="h-4 w-4 lg:h-5 lg:w-5 " />
+                <span className="absolute bottom-5 left-4 bg-gradient-to-br from-red-800 via-red-600 to-red-900 text-destructive-foreground text-xs rounded-full h-4 w-4 lg:h-5 lg:w-5 flex items-center justify-center">
                   3
                 </span>
               </Button>
