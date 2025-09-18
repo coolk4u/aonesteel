@@ -30,7 +30,7 @@ const Dashboard = () => {
     icon: Package,
     textColor: 'text-white'
   }, {
-    title: 'Available Credit',
+    title: 'Credit Limit',
     value: '₹3,80,000',
     change: '+4.2%',
     trend: 'up',
