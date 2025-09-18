@@ -24,7 +24,7 @@ const Login = () => {
       localStorage.setItem('distributorName', credentials.username);
       toast({
         title: "Login Successful",
-        description: "Welcome to Birlanu Distributor Portal",
+        description: "Welcome to A-One Distributor Portal",
       });
       navigate('/dashboard');
     } else {
