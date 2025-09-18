@@ -14,7 +14,6 @@ import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
-import FetchData from "./fetchdata";
 
 
 const queryClient = new QueryClient();
@@ -25,7 +24,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-      <FetchData />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
