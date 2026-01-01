@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import DashboardLayout from '@/components/Layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +8,7 @@ import {
   Table, 
   TableBody, 
   TableCell, 
- TableHead, 
+  TableHead, 
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
@@ -24,101 +23,146 @@ import {
 } from "lucide-react";
 
 interface InventoryRecord {
-  Id: string;
-  Name: string;
-  Product__r: {
-    Name: string;
-  };
-  Category__c: string;
-  Current_Stock__c: number;
-  Status__c: string;
-  Minimum_Stock__c: number;
-  Unit_Price__c: number;
-  Inventory_Value__c: number;
+  id: string;
+  name: string;
+  productName: string;
+  category: string;
+  currentStock: number;
+  status: string;
+  minimumStock: number;
+  unitPrice: number;
+  inventoryValue: number;
+  sku: string;
 }
+
+// Dummy data in JSON format
+const DUMMY_INVENTORY_DATA: InventoryRecord[] = [
+  {
+    id: "1",
+    name: "Steel Rod 12mm",
+    productName: "Construction Steel Rod",
+    category: "Construction Materials",
+    currentStock: 1500,
+    status: "In Stock",
+    minimumStock: 500,
+    unitPrice: 850,
+    inventoryValue: 1275000,
+    sku: "STRD-12MM-001"
+  },
+  {
+    id: "2",
+    name: "Galvanized Sheet",
+    productName: "GI Sheet 2mm",
+    category: "Sheets & Plates",
+    currentStock: 80,
+    status: "Low Stock",
+    minimumStock: 100,
+    unitPrice: 1200,
+    inventoryValue: 96000,
+    sku: "GSHT-2MM-002"
+  },
+  {
+    id: "3",
+    name: "Steel Pipe 4 inch",
+    productName: "Seamless Steel Pipe",
+    category: "Pipes & Tubes",
+    currentStock: 0,
+    status: "Out of Stock",
+    minimumStock: 50,
+    unitPrice: 2500,
+    inventoryValue: 0,
+    sku: "SPPE-4IN-003"
+  },
+  {
+    id: "4",
+    name: "Angle Iron 50x50",
+    productName: "MS Angle Iron",
+    category: "Structural Steel",
+    currentStock: 2200,
+    status: "In Stock",
+    minimumStock: 300,
+    unitPrice: 650,
+    inventoryValue: 1430000,
+    sku: "ANGI-5050-004"
+  },
+  {
+    id: "5",
+    name: "Wire Mesh",
+    productName: "Welded Wire Mesh",
+    category: "Wire Products",
+    currentStock: 120,
+    status: "Low Stock",
+    minimumStock: 150,
+    unitPrice: 450,
+    inventoryValue: 54000,
+    sku: "WMES-6MM-005"
+  },
+  {
+    id: "6",
+    name: "Steel Beam",
+    productName: "I-Beam 8 inch",
+    category: "Structural Steel",
+    currentStock: 45,
+    status: "In Stock",
+    minimumStock: 20,
+    unitPrice: 8500,
+    inventoryValue: 382500,
+    sku: "STBM-8IN-006"
+  },
+  {
+    id: "7",
+    name: "Steel Plate 10mm",
+    productName: "MS Plate",
+    category: "Sheets & Plates",
+    currentStock: 1800,
+    status: "In Stock",
+    minimumStock: 400,
+    unitPrice: 950,
+    inventoryValue: 1710000,
+    sku: "STPL-10MM-007"
+  },
+  {
+    id: "8",
+    name: "Rebar 16mm",
+    productName: "TMT Rebar",
+    category: "Construction Materials",
+    currentStock: 0,
+    status: "Out of Stock",
+    minimumStock: 800,
+    unitPrice: 780,
+    inventoryValue: 0,
+    sku: "REBR-16MM-008"
+  }
+];
 
 const Inventory = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryRecord[]>([]);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Step 1: Get Access Token
-  const getAccessToken = async () => {
-    const salesforceUrl =
-      "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token";
-    const clientId =
-      "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl";
-    const clientSecret =
-      "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891";
-
-    const params = new URLSearchParams();
-    params.append("grant_type", "client_credentials");
-    params.append("client_id", clientId);
-    params.append("client_secret", clientSecret);
-
-    try {
-      const response = await axios.post(salesforceUrl, params, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      });
-      setAccessToken(response.data.access_token);
-    } catch (err: unknown) {
-      const errorMessage = axios.isAxiosError(err)
-        ? err.response?.data?.message || err.message
-        : "Unknown error occurred";
-      console.error("❌ Error fetching access token:", errorMessage);
-      setError("Failed to fetch access token.");
-    }
-  };
-
-  // Step 2: Fetch Inventory Data
+  // Simulate API call with dummy data
   const fetchInventoryData = async () => {
-    if (!accessToken) return;
-
-    try {
-      const query = `SELECT Id, Name, Product__r.Name, Category__c, Current_Stock__c, Status__c, Minimum_Stock__c, Unit_Price__c, Inventory_Value__c, Last_Updated__c FROM Inventory__c where Distributor_Name__r.Name = 'GR Trading Company'`;
-      const encodedQuery = encodeURIComponent(query);
-      const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${encodedQuery}`;
-
-      const response = await axios.get(queryUrl, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const records: InventoryRecord[] = response.data.records;
-      setInventoryItems(records);
+    setLoading(true);
+    
+    // Simulate network delay
+    setTimeout(() => {
+      setInventoryItems(DUMMY_INVENTORY_DATA);
       setLoading(false);
-    } catch (err: unknown) {
-      const errorMessage = axios.isAxiosError(err)
-        ? err.response?.data?.message || err.message
-        : "Unknown error occurred";
-      console.error("❌ Error fetching data:", errorMessage);
-      setError("Failed to fetch data from Salesforce.");
-      setLoading(false);
-    }
+    }, 800);
   };
 
   useEffect(() => {
-    getAccessToken();
+    fetchInventoryData();
   }, []);
 
-  useEffect(() => {
-    if (accessToken) {
-      fetchInventoryData();
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "In Stock": return "bg-green-100 text-green-800";
+      case "Low Stock": return "bg-yellow-100 text-yellow-800";
+      case "Out of Stock": return "bg-red-100 text-red-800";
+      default: return "bg-gray-100 text-gray-800";
     }
-  }, [accessToken]);
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "In Stock": return "bg-green-100 text-green-800";
-    case "Low Stock": return "bg-yellow-100 text-yellow-800";
-    case "Out of Stock": return "bg-red-100 text-red-800";
-    default: return "bg-gray-100 text-gray-800";
-  }
-};
+  };
 
   const getStockPercentage = (current: number, min: number) => {
     const max = min * 3; // Assuming max stock is 3x min stock
@@ -127,35 +171,42 @@ const getStatusColor = (status: string) => {
 
   // Filter inventory items based on search term
   const filteredInventory = inventoryItems.filter(item =>
-    (item.Product__r?.Name || item.Name).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.Category__c.toLowerCase().includes(searchTerm.toLowerCase())
+    item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.sku.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Calculate summary statistics
-  const totalItems = inventoryItems.reduce((sum, item) => sum + (item.Current_Stock__c || 0), 0);
+  const totalItems = inventoryItems.reduce((sum, item) => sum + item.currentStock, 0);
   const lowStockItems = inventoryItems.filter(item => 
-    item.Status__c === "Low Stock" || (item.Current_Stock__c || 0) <= (item.Minimum_Stock__c || 0)
+    item.status === "Low Stock" || item.currentStock <= item.minimumStock
   ).length;
   const outOfStockItems = inventoryItems.filter(item => 
-    (item.Current_Stock__c || 0) === 0
+    item.currentStock === 0
   ).length;
-  const totalInventoryValue = inventoryItems.reduce((sum, item) => sum + (item.Inventory_Value__c || 0), 0);
+  const totalInventoryValue = inventoryItems.reduce((sum, item) => sum + item.inventoryValue, 0);
+
+  const handleExport = () => {
+    // Simulate export functionality
+    console.log("Exporting stock report...");
+    alert("Stock report exported successfully!");
+  };
+
+  const handleUpdateStock = () => {
+    // Simulate stock update functionality
+    console.log("Opening stock update modal...");
+    alert("Stock update modal opened!");
+  };
 
   if (loading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="text-lg">Loading inventory data...</div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="text-lg text-red-600">{error}</div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+            <div className="text-lg text-gray-600">Loading inventory data...</div>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -171,11 +222,14 @@ const getStatusColor = (status: string) => {
             <p className="text-gray-600">Track your stock levels and movements</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export Stock Report
             </Button>
-            <Button className="bg-gradient-to-br from-red-800 via-red-600 to-red-900">
+            <Button 
+              className="bg-gradient-to-br from-red-800 via-red-600 to-red-900 hover:from-red-900 hover:via-red-700 hover:to-red-800"
+              onClick={handleUpdateStock}
+            >
               <Upload className="h-4 w-4 mr-2" />
               Update Stock Levels
             </Button>
@@ -202,7 +256,7 @@ const getStatusColor = (status: string) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Stock</p>
-                  <p className="text-2xl font-bold">{totalItems}</p>
+                  <p className="text-2xl font-bold">{totalItems.toLocaleString()}</p>
                 </div>
                 <div className="bg-green-100 p-2 rounded-lg">
                   <TrendingUp className="h-5 w-5 text-green-600" />
@@ -228,7 +282,7 @@ const getStatusColor = (status: string) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Inventory Value</p>
-                  <p className="text-2xl font-bold">₹{totalInventoryValue.toFixed(2)}</p>
+                  <p className="text-2xl font-bold">₹{totalInventoryValue.toLocaleString('en-IN')}</p>
                 </div>
                 <div className="bg-red-100 p-2 rounded-lg">
                   <TrendingDown className="h-5 w-5 text-red-600" />
@@ -255,61 +309,54 @@ const getStatusColor = (status: string) => {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product Details</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Current Stock</TableHead>
-                  {/* <TableHead>Stock Level</TableHead> */}
-                  <TableHead>Unit Price</TableHead>
-                  <TableHead>Inventory Value</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredInventory.map((item) => (
-                  <TableRow key={item.Id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{item.Product__r?.Name || item.Name}</p>
-                        <p className="text-sm text-gray-500">{item.Name}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{item.Category__c}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{item.Current_Stock__c || 0}</p>
-                        <p className="text-xs text-gray-500">Min: {item.Minimum_Stock__c || 0}</p>
-                      </div>
-                    </TableCell>
-                    {/* <TableCell>
-                      <div className="space-y-1">
-                        <div className="w-20 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${
-                              getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1) > 50 ? 'bg-green-500' :
-                              getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1) > 20 ? 'bg-yellow-500' : 'bg-red-500'
-                            }`}
-                            style={{ width: `${getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1)}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          {getStockPercentage(item.Current_Stock__c || 0, item.Minimum_Stock__c || 1)}%
-                        </p>
-                      </div>
-                    </TableCell> */}
-                    <TableCell>₹{item.Unit_Price__c?.toFixed(2)}</TableCell>
-                    <TableCell>₹{item.Inventory_Value__c?.toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(item.Status__c)}>
-                        {item.Status__c}
-                      </Badge>
-                    </TableCell>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product Details</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Current Stock</TableHead>
+                    <TableHead>Unit Price</TableHead>
+                    <TableHead>Inventory Value</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredInventory.length > 0 ? (
+                    filteredInventory.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{item.productName}</p>
+                            <p className="text-sm text-gray-500">SKU: {item.sku}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{item.category}</TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{item.currentStock.toLocaleString()}</p>
+                            <p className="text-xs text-gray-500">Min: {item.minimumStock}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>₹{item.unitPrice.toLocaleString('en-IN')}</TableCell>
+                        <TableCell>₹{item.inventoryValue.toLocaleString('en-IN')}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(item.status)}>
+                            {item.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                        No products found matching your search criteria.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
