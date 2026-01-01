@@ -1,6 +1,5 @@
 // orders.tsx
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,84 +31,82 @@ interface Order {
   status: "Processing" | "Shipped" | "Delivered" | "Pending";
 }
 
+// Dummy data in JSON format
+const DUMMY_ORDERS: Order[] = [
+  {
+    id: "ORD-2024-001",
+    date: "2024-03-15",
+    items: [
+      { name: "Stainless Steel Sheet", quantity: 5, price: 1250, unit: "pieces" },
+      { name: "Galvanized Iron Pipe", quantity: 10, price: 850, unit: "meters" },
+      { name: "Aluminum Rod", quantity: 8, price: 950, unit: "pieces" }
+    ],
+    subtotal: 22550,
+    tax: 4059,
+    total: 26609,
+    status: "Delivered"
+  },
+  {
+    id: "ORD-2024-002",
+    date: "2024-03-14",
+    items: [
+      { name: "Copper Wire", quantity: 15, price: 675, unit: "meters" },
+      { name: "Steel Beam", quantity: 3, price: 3250, unit: "pieces" }
+    ],
+    subtotal: 15875,
+    tax: 2857.5,
+    total: 18732.5,
+    status: "Shipped"
+  },
+  {
+    id: "ORD-2024-003",
+    date: "2024-03-13",
+    items: [
+      { name: "Brass Fittings", quantity: 25, price: 120, unit: "pieces" },
+      { name: "Steel Plate", quantity: 6, price: 1850, unit: "pieces" },
+      { name: "Zinc Coating", quantity: 2, price: 4500, unit: "liters" }
+    ],
+    subtotal: 20100,
+    tax: 3618,
+    total: 23718,
+    status: "Processing"
+  },
+  {
+    id: "ORD-2024-004",
+    date: "2024-03-12",
+    items: [
+      { name: "Carbon Steel Bar", quantity: 12, price: 750, unit: "pieces" },
+      { name: "Stainless Steel Bolts", quantity: 50, price: 45, unit: "pieces" }
+    ],
+    subtotal: 11250,
+    tax: 2025,
+    total: 13275,
+    status: "Pending"
+  },
+  {
+    id: "ORD-2024-005",
+    date: "2024-03-11",
+    items: [
+      { name: "Titanium Alloy Sheet", quantity: 4, price: 5200, unit: "pieces" },
+      { name: "Nickel Wire", quantity: 8, price: 1875, unit: "meters" },
+      { name: "Steel Mesh", quantity: 3, price: 3250, unit: "rolls" }
+    ],
+    subtotal: 39750,
+    tax: 7155,
+    total: 46905,
+    status: "Delivered"
+  }
+];
+
 const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
+    // Simulate API call with timeout
     const fetchOrders = async () => {
-      try {
-        const authResponse = await axios.post(
-          "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token",
-          new URLSearchParams({
-            grant_type: "client_credentials",
-            client_id:
-              "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl",
-            client_secret:
-              "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891",
-          }),
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-        );
-
-        const accessToken = authResponse.data.access_token;
-
-        const query = `
-SELECT 
-    OrderNumber, 
-    Status, 
-    EffectiveDate, 
-    AccountId,
-    (SELECT 
-        Quantity, 
-        UnitPrice, 
-        TotalPrice,
-        PricebookEntry.Product2.Name,
-        PricebookEntry.Product2.ProductCode,
-        PricebookEntry.Product2.Description
-     FROM OrderItems)
-FROM Order
-WHERE CreatedDate = TODAY
-ORDER BY CreatedDate DESC
-LIMIT 200
-        `.replace(/\s+/g, "+");
-
-        const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
-        const response = await axios.get(queryUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        const fetchedOrders = response.data.records.map((order: any) => {
-          const items = (order.OrderItems?.records || []).map((item: any) => ({
-            name: item.PricebookEntry?.Product2?.Name || "Unknown",
-            quantity: item.Quantity,
-            price: item.UnitPrice,
-            unit: "units",
-          }));
-
-          const subtotal = items.reduce(
-            (sum: number, item: OrderItem) => sum + item.quantity * item.price,
-            0
-          );
-          const tax = Math.round(subtotal * 0.18);
-          const total = subtotal + tax;
-
-          return {
-            id: order.OrderNumber,
-            date: order.EffectiveDate,
-            items,
-            subtotal,
-            tax,
-            total,
-            status: order.Status || "Pending",
-          };
-        });
-
-        setOrders(fetchedOrders);
-      } catch (error) {
-        console.error("Failed to fetch orders:", error);
-      }
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setOrders(DUMMY_ORDERS);
     };
 
     fetchOrders();
@@ -202,7 +199,7 @@ LIMIT 200
                         <span className="ml-1">{order.status}</span>
                       </Badge>
                       <div className="text-lg font-bold text-gray-900">
-                        ₹{order.total}
+                        ₹{order.total.toLocaleString('en-IN')}
                       </div>
                     </div>
                   </div>
@@ -220,11 +217,11 @@ LIMIT 200
                             {item.name}
                           </p>
                           <p className="text-sm text-gray-600">
-                            {item.quantity} {item.unit} × ₹{item.price}
+                            {item.quantity} {item.unit} × ₹{item.price.toLocaleString('en-IN')}
                           </p>
                         </div>
                         <div className="font-medium text-gray-900">
-                          ₹{item.quantity * item.price}
+                          ₹{(item.quantity * item.price).toLocaleString('en-IN')}
                         </div>
                       </div>
                     ))}
@@ -234,15 +231,15 @@ LIMIT 200
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <p className="text-gray-600">Subtotal</p>
-                        <p className="font-medium">₹{order.subtotal}</p>
+                        <p className="font-medium">₹{order.subtotal.toLocaleString('en-IN')}</p>
                       </div>
                       <div>
                         <p className="text-gray-600">GST (18%)</p>
-                        <p className="font-medium">₹{order.tax}</p>
+                        <p className="font-medium">₹{order.tax.toLocaleString('en-IN')}</p>
                       </div>
                       <div>
                         <p className="text-gray-600 font-medium">Total</p>
-                        <p className="font-bold text-lg">₹{order.total}</p>
+                        <p className="font-bold text-lg">₹{order.total.toLocaleString('en-IN')}</p>
                       </div>
                       <div className="flex justify-end">
                         <Button variant="outline" size="sm">
