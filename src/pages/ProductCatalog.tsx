@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import { toast } from "@/hooks/use-toast";
-import axios from "axios";
 
 interface Product {
   id: string;
@@ -41,89 +40,305 @@ const ProductCatalog = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [cart, setCart] = useState<any[]>([]);
 
-  const fetchProducts = async () => {
-    const tokenUrl =
-      "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token";
-    const clientId =
-      "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl";
-    const clientSecret =
-      "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891";
+  const dummyProducts: Product[] = [
+    {
+      id: "1",
+      name: "A-One TMT Bar FE 500",
+      category: "TMT Bars",
+      price: 65000,
+      mrp: 72000,
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+      rating: 4.5,
+      inStock: true,
+      description: "High strength FE 500 TMT bars with superior earthquake resistance and corrosion protection.",
+      schemes: ["Bulk Discount Available", "Limited Time Offer"],
+      minOrderQty: 10,
+      unit: "tons",
+      bulkDiscount: 20,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 15
+    },
+    {
+      id: "2",
+      name: "A-One TMT Bar FE 550",
+      category: "TMT Bars",
+      price: 68000,
+      mrp: 75000,
+      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      rating: 4.7,
+      inStock: true,
+      description: "Premium FE 550 grade TMT bars for high-rise construction and industrial projects.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 10,
+      unit: "tons",
+      bulkDiscount: 10,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 10
+    },
+    {
+      id: "3",
+      name: "Structural Steel Beams",
+      category: "Structural Steel",
+      price: 75000,
+      mrp: 82000,
+      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop",
+      rating: 4.3,
+      inStock: true,
+      description: "ISMB and ISMC sections for structural frameworks and industrial construction.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 5
+    },
+    {
+      id: "4",
+      name: "Steel Plates",
+      category: "Plates & Sheets",
+      price: 85000,
+      mrp: 92000,
+      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      rating: 4.6,
+      inStock: true,
+      description: "High-quality steel plates for fabrication, shipbuilding, and construction.",
+      schemes: ["Bulk Discount Available", "Limited Time Offer"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 20,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 15
+    },
+    {
+      id: "5",
+      name: "Steel Angles",
+      category: "Structural Steel",
+      price: 70000,
+      mrp: 78000,
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+      rating: 4.2,
+      inStock: true,
+      description: "Equal and unequal steel angles for structural support and framework.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 10
+    },
+    {
+      id: "6",
+      name: "Steel Channels",
+      category: "Structural Steel",
+      price: 72000,
+      mrp: 80000,
+      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop",
+      rating: 4.4,
+      inStock: true,
+      description: "ISMC channels for industrial sheds, warehouses, and structural applications.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 5,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 5
+    },
+    {
+      id: "7",
+      name: "Steel Round Bars",
+      category: "Bars & Rods",
+      price: 80000,
+      mrp: 88000,
+      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      rating: 4.5,
+      inStock: true,
+      description: "High tensile round bars for machining, forging, and construction applications.",
+      schemes: ["Bulk Discount Available", "Limited Time Offer"],
+      minOrderQty: 10,
+      unit: "tons",
+      bulkDiscount: 20,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 15
+    },
+    {
+      id: "8",
+      name: "Steel Square Bars",
+      category: "Bars & Rods",
+      price: 82000,
+      mrp: 90000,
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+      rating: 4.3,
+      inStock: true,
+      description: "Precision square bars for fabrication, construction, and industrial use.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 10,
+      unit: "tons",
+      bulkDiscount: 10
+    },
+    {
+      id: "9",
+      name: "MS Flat Bars",
+      category: "Bars & Rods",
+      price: 78000,
+      mrp: 85000,
+      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop",
+      rating: 4.1,
+      inStock: true,
+      description: "Mild steel flat bars for fabrication, supports, and structural applications.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 5
+    },
+    {
+      id: "10",
+      name: "Steel Wire Rods",
+      category: "Wire & Mesh",
+      price: 72000,
+      mrp: 79000,
+      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      rating: 4.4,
+      inStock: true,
+      description: "High-quality wire rods for manufacturing, construction, and industrial use.",
+      schemes: ["Bulk Discount Available", "Limited Time Offer"],
+      minOrderQty: 10,
+      unit: "tons",
+      bulkDiscount: 20,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 15
+    },
+    {
+      id: "11",
+      name: "Steel Pipes",
+      category: "Pipes & Tubes",
+      price: 95000,
+      mrp: 105000,
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+      rating: 4.6,
+      inStock: true,
+      description: "Seamless and welded steel pipes for plumbing, construction, and industrial use.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 10
+    },
+    {
+      id: "12",
+      name: "Steel Tubes",
+      category: "Pipes & Tubes",
+      price: 98000,
+      mrp: 108000,
+      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop",
+      rating: 4.5,
+      inStock: true,
+      description: "Square and rectangular steel tubes for structural and fabrication purposes.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 5,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 5
+    },
+    {
+      id: "13",
+      name: "Galvanized Steel Sheets",
+      category: "Plates & Sheets",
+      price: 90000,
+      mrp: 98000,
+      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      rating: 4.7,
+      inStock: true,
+      description: "Corrosion-resistant galvanized sheets for roofing and industrial applications.",
+      schemes: ["Bulk Discount Available", "Limited Time Offer"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 20,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 15
+    },
+    {
+      id: "14",
+      name: "Color Coated Sheets",
+      category: "Plates & Sheets",
+      price: 95000,
+      mrp: 105000,
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+      rating: 4.8,
+      inStock: true,
+      description: "Aesthetic and durable color coated sheets for modern construction.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 10
+    },
+    {
+      id: "15",
+      name: "MS Chequered Plates",
+      category: "Plates & Sheets",
+      price: 85000,
+      mrp: 92000,
+      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop",
+      rating: 4.3,
+      inStock: true,
+      description: "Anti-skid chequered plates for industrial flooring and platforms.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 5
+    },
+    {
+      id: "16",
+      name: "Steel Reinforced Mesh",
+      category: "Wire & Mesh",
+      price: 78000,
+      mrp: 86000,
+      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      rating: 4.4,
+      inStock: true,
+      description: "Welded steel mesh for concrete reinforcement and industrial applications.",
+      schemes: ["Bulk Discount Available", "Limited Time Offer"],
+      minOrderQty: 10,
+      unit: "tons",
+      bulkDiscount: 20,
+      limitedTimeOffer: true,
+      limitedTimeDiscount: 15
+    },
+    {
+      id: "17",
+      name: "Steel Binding Wire",
+      category: "Wire & Mesh",
+      price: 65000,
+      mrp: 72000,
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
+      rating: 4.2,
+      inStock: true,
+      description: "Annealed binding wire for construction and reinforcement tying.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 5,
+      unit: "tons",
+      bulkDiscount: 10
+    },
+    {
+      id: "18",
+      name: "Steel Nails",
+      category: "Fasteners",
+      price: 95000,
+      mrp: 105000,
+      image: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop",
+      rating: 4.1,
+      inStock: true,
+      description: "High-quality steel nails for construction and carpentry applications.",
+      schemes: ["Bulk Discount Available"],
+      minOrderQty: 1,
+      unit: "tons",
+      bulkDiscount: 5
+    }
+  ];
 
-    const params = new URLSearchParams();
-    params.append("grant_type", "client_credentials");
-    params.append("client_id", clientId);
-    params.append("client_secret", clientSecret);
-
+  const fetchProducts = () => {
     try {
-      const tokenResponse = await axios.post(tokenUrl, params, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      });
-      const accessToken = tokenResponse.data.access_token;
-
-      const query = `
-                SELECT Id, Name, ProductCode, Family, IsActive, Prod_Img_Url__c, Description,
-        (SELECT UnitPrice FROM PricebookEntries WHERE Pricebook2.IsStandard = true LIMIT 1)
-        FROM Product2
-        WHERE Family = 'Steel'
-        ORDER BY CreatedDate DESC
-        LIMIT 200
-      `.replace(/\s+/g, "+");
-
-      const queryUrl = `https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/data/v62.0/query?q=${query}`;
-
-      const response = await axios.get(queryUrl, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const salesforceProducts = response.data.records.map((record: any, index: number) => {
-        // Assign fixed discounts based on product index to ensure consistent distribution
-        let bulkDiscount: number;
-        let hasLimitedOffer = false;
-        let limitedTimeDiscount = 0;
-        
-        // Distribute products evenly across discount categories
-        if (index % 3 === 0) {
-          bulkDiscount = 20;
-          hasLimitedOffer = true;
-          limitedTimeDiscount = 15; // Fixed 15% for 20% discount products
-        } else if (index % 3 === 1) {
-          bulkDiscount = 10;
-          hasLimitedOffer = index % 2 === 0; // 50% chance for limited offer
-          limitedTimeDiscount = hasLimitedOffer ? 10 : 0; // Fixed 10% when available
-        } else {
-          bulkDiscount = 5;
-          hasLimitedOffer = index % 4 === 0; // 25% chance for limited offer
-          limitedTimeDiscount = hasLimitedOffer ? 5 : 0; // Fixed 5% when available
-        }
-        
-        return {
-          id: record.Id,
-          name: record.Name,
-          category: record.Family || "General",
-          price: record.PricebookEntries?.records?.[0]?.UnitPrice || 0,
-          mrp: (record.PricebookEntries?.[0]?.UnitPrice || 0) * 1.1, // assume 10% markup
-          image: record.Prod_Img_Url__c || "https://via.placeholder.com/150",
-          rating: Math.random() * 2 + 3, // Random rating between 3 and 5
-          inStock: record.IsActive,
-          description: record.Description,
-          schemes: [
-            "Bulk Discount Available",
-            hasLimitedOffer ? "Limited Time Offer" : ""
-          ].filter(Boolean),
-          minOrderQty: 10,
-          unit: "units",
-          bulkDiscount: bulkDiscount,
-          limitedTimeOffer: hasLimitedOffer,
-          limitedTimeDiscount: limitedTimeDiscount
-        };
-      });
-
-      setProducts(salesforceProducts);
+      // Use dummy data instead of Salesforce API
+      setProducts(dummyProducts);
     } catch (error) {
-      console.error("Error fetching product data:", error);
+      console.error("Error loading product data:", error);
+      // Fallback to dummy data even if there's an error
+      setProducts(dummyProducts.slice(0, 12));
     }
   };
 
@@ -151,9 +366,9 @@ const ProductCatalog = () => {
 
   // Group products by bulk discount with fixed counts
   const productsByBulkDiscount = {
-    discount20: filteredProducts.filter(product => product.bulkDiscount === 20).slice(0, 6), // Fixed 6 products
-    discount10: filteredProducts.filter(product => product.bulkDiscount === 10).slice(0, 6), // Fixed 6 products
-    discount5: filteredProducts.filter(product => product.bulkDiscount === 5).slice(0, 6),   // Fixed 6 products
+    discount20: filteredProducts.filter(product => product.bulkDiscount === 20).slice(0, 6),
+    discount10: filteredProducts.filter(product => product.bulkDiscount === 10).slice(0, 6),
+    discount5: filteredProducts.filter(product => product.bulkDiscount === 5).slice(0, 6),
     noDiscount: filteredProducts.filter(product => !product.bulkDiscount)
   };
 
@@ -278,10 +493,10 @@ const ProductCatalog = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-2xl font-bold text-gray-900">
-                        ₹{product.price}
+                        ₹{product.price.toLocaleString()}
                       </span>
                       <span className="text-sm text-gray-500 line-through ml-2">
-                        ₹{product.mrp}
+                        ₹{product.mrp.toLocaleString()}
                       </span>
                     </div>
                     <Badge variant="outline" className="text-xs">
