@@ -17,7 +17,6 @@ import DashboardLayout from "@/components/Layout/DashboardLayout";
 import CartTemplate from "@/components/CartTemplate/CartTemplate";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 interface CartItem {
   id: string;
@@ -35,14 +34,21 @@ interface CartItem {
   limitedTimeDiscount?: number;
 }
 
-const CLIENT_ID =
-  "3MVG9XDDwp5wgbs0GBXn.nVBDZ.vhpls3uA9Kt.F0F5kdFtHSseF._pbUChPd76LvA0AdGGrLu7SfDmwhvCYl";
-const CLIENT_SECRET =
-  "D63B980DDDE3C45170D6F9AE12215FCB6A7490F97E383E579BE8DEE427A0D891";
-const TOKEN_URL =
-  "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/oauth2/token";
-const ORDER_API_URL =
-  "https://aonesteelgroup-dev-ed.develop.my.salesforce.com/services/apexrest/CreateOrderService";
+// Dummy order data
+const DUMMY_ORDERS = [
+  {
+    orderNumber: "ORD-001",
+    contractNumber: "CON-001",
+    success: true,
+    message: "Order placed successfully"
+  },
+  {
+    orderNumber: "ORD-002", 
+    contractNumber: "CON-002",
+    success: true,
+    message: "Order placed successfully"
+  }
+];
 
 const Cart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -137,25 +143,7 @@ const Cart = () => {
 
   const calculateTotal = () => calculateSubtotal() + calculateTax();
 
-  const fetchAccessToken = async () => {
-    const params = new URLSearchParams();
-    params.append("grant_type", "client_credentials");
-    params.append("client_id", CLIENT_ID);
-    params.append("client_secret", CLIENT_SECRET);
-
-    try {
-      const response = await axios.post(TOKEN_URL, params, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-      return response.data.access_token;
-    } catch (error) {
-      console.error("Error fetching access token:", error);
-      throw new Error("Failed to authenticate with Salesforce");
-    }
-  };
-
+  // Simulate order placement with dummy data
   const placeOrder = async () => {
     if (cart.length === 0) {
       toast({
@@ -169,36 +157,40 @@ const Cart = () => {
     setIsPlacingOrder(true);
 
     try {
-      const token = await fetchAccessToken();
-
-      const payload = {
-        accountId: "0015j00000R5v2FAAR",
-        orderItems: cart.map((item) => ({
-          productId: item.id,
-          quantity: item.quantity,
-          unitPrice: getFinalUnitPrice(item), // ✅ send discounted price
-        })),
-      };
-
-      const response = await axios.post(ORDER_API_URL, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      });
-
-      if (response.data.success) {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Get a random dummy order
+      const randomOrder = DUMMY_ORDERS[Math.floor(Math.random() * DUMMY_ORDERS.length)];
+      
+      if (randomOrder.success) {
+        // Prepare order data for localStorage
+        const orderData = {
+          orderNumber: randomOrder.orderNumber,
+          contractNumber: randomOrder.contractNumber,
+          items: cart,
+          subtotal: calculateSubtotal(),
+          tax: calculateTax(),
+          total: calculateTotal(),
+          date: new Date().toISOString(),
+          status: "Pending"
+        };
+        
+        // Save order to localStorage
+        const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+        existingOrders.push(orderData);
+        localStorage.setItem("orders", JSON.stringify(existingOrders));
+        
         clearCart();
         toast({
           title: "Order Placed Successfully!",
-          description: `Order Number: ${response.data.orderNumber}, Contract Number: ${response.data.contractNumber}`,
+          description: `Order Number: ${randomOrder.orderNumber}, Contract Number: ${randomOrder.contractNumber}`,
         });
         navigate("/orders");
       } else {
         toast({
           title: "Order Failed",
-          description: response.data.message || "Failed to create order",
+          description: randomOrder.message || "Failed to create order",
           variant: "destructive",
         });
       }
